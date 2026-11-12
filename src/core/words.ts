@@ -73,10 +73,10 @@ export function collectTags(words: WordEntry[]): string[] {
   );
 }
 
-export function filterWords(
-  words: WordEntry[],
+export function filterWords<T extends WordEntry>(
+  words: T[],
   filter: WordFilter
-): WordEntry[] {
+): T[] {
   return words.filter((w) => {
     if (filter.source !== null && (w.source?.trim() ?? '') !== filter.source) {
       return false;
@@ -89,7 +89,7 @@ export function filterWords(
 }
 
 /** Newest first; ties keep input order (Array.prototype.sort is stable). */
-export function sortWordsByDate(words: WordEntry[]): WordEntry[] {
+export function sortWordsByDate<T extends WordEntry>(words: T[]): T[] {
   return [...words].sort((a, b) => b.date.localeCompare(a.date));
 }
 
@@ -141,23 +141,44 @@ export interface SentenceSegment {
   text: string;
   /** True when this segment is an occurrence of the word. */
   match: boolean;
-  /** Character offset of this segment in the sentence; unique, usable as a React key. */
+  /** Character offset of this segment in the plain sentence; unique, usable as a React key. */
   start: number;
+}
+
+/** Remove markdown `**bold**` markers. */
+export function stripBold(s: string): string {
+  return s.replace(/\*\*/g, '');
 }
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/** Segments from explicit `**bold**` markers; offsets are in the stripped text. */
+function highlightBold(sentence: string): SentenceSegment[] {
+  const segments: SentenceSegment[] = [];
+  let start = 0;
+  for (const [i, part] of sentence.split(/\*\*([^*]+)\*\*/).entries()) {
+    if (!part) continue;
+    segments.push({ text: part, match: i % 2 === 1, start });
+    start += part.length;
+  }
+  return segments.length ? segments : [{ text: '', match: false, start: 0 }];
+}
+
 /**
  * Split a sentence into plain / highlighted segments around the word.
- * Case-insensitive, must start at a word boundary, and swallows a trailing
- * inflection so "run" also highlights "running" and "runs".
+ * If the sentence carries markdown `**bold**` markers (as the blog posts do),
+ * those decide the highlight, which also covers inflections the regex cannot
+ * guess ("lash out" -> "**lashed**"). Otherwise: case-insensitive, must start
+ * at a word boundary, and swallows a trailing inflection so "run" also
+ * highlights "running" and "runs".
  */
 export function highlightWord(
   sentence: string,
   word: string
 ): SentenceSegment[] {
+  if (sentence.includes('**')) return highlightBold(sentence);
   const needle = word.trim();
   if (!needle) return [{ text: sentence, match: false, start: 0 }];
   const re = new RegExp(`\\b${escapeRegExp(needle)}\\w*`, 'gi');

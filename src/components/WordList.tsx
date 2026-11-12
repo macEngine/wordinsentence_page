@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import {
   ALL_WORDS_FILTER,
@@ -9,14 +9,15 @@ import {
   paginate,
   safeLink,
   sortWordsByDate,
+  stripBold,
   truncateSentence,
   wordKey,
-  type WordEntry,
   type WordFilter,
 } from '../core/words';
+import type { WordPost } from '../core/wordPost';
 
 interface WordListProps {
-  words: WordEntry[];
+  words: WordPost[];
 }
 
 const PILL_ON = 'bg-[var(--color-accent)] text-[var(--color-on-accent)]';
@@ -206,17 +207,70 @@ export function WordList({ words }: WordListProps) {
                   </td>
                   <td className="py-3">
                     {selected ? (
-                      <div className="space-y-2">
+                      <div className="max-w-[640px] space-y-3">
                         <p className="leading-relaxed">
                           <Sentence
                             sentence={entry.sentence}
                             word={entry.word}
                           />
                         </p>
-                        {entry.meaning && (
+                        {entry.translation && (
+                          <p className="text-xs leading-relaxed text-[var(--color-muted)]">
+                            {entry.translation}
+                          </p>
+                        )}
+                        {(entry.phoneticUk || entry.phoneticUs) && (
                           <p className="text-xs text-[var(--color-muted)]">
+                            {entry.phoneticUk && (
+                              <span>英 {entry.phoneticUk}</span>
+                            )}
+                            {entry.phoneticUk && entry.phoneticUs && ' '}
+                            {entry.phoneticUs && (
+                              <span>美 {entry.phoneticUs}</span>
+                            )}
+                          </p>
+                        )}
+                        {entry.meaning && (
+                          <p className="text-xs leading-relaxed">
                             <span className="font-medium">{t('meaning')}:</span>{' '}
                             {entry.meaning}
+                          </p>
+                        )}
+                        {entry.synonyms && entry.synonyms.length > 0 && (
+                          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                            {entry.synonyms.map((syn) => (
+                              <Fragment key={syn.word}>
+                                <dt className="font-mono font-medium">
+                                  {syn.word}
+                                </dt>
+                                <dd className="text-[var(--color-muted)]">
+                                  {syn.nuance}
+                                  {syn.example && (
+                                    <span className="ml-1 italic">
+                                      · {syn.example}
+                                    </span>
+                                  )}
+                                </dd>
+                              </Fragment>
+                            ))}
+                          </dl>
+                        )}
+                        {entry.dailySentence && (
+                          <blockquote className="border-l-2 border-[var(--color-border)] pl-3 text-xs leading-relaxed text-[var(--color-muted)]">
+                            <Sentence
+                              sentence={entry.dailySentence.text}
+                              word={entry.word}
+                            />
+                            {entry.dailySentence.attribution && (
+                              <span className="ml-1">
+                                —— {entry.dailySentence.attribution}
+                              </span>
+                            )}
+                          </blockquote>
+                        )}
+                        {entry.sourceDetail && (
+                          <p className="text-xs text-[var(--color-muted)]">
+                            {entry.sourceDetail}
                           </p>
                         )}
                         {link && (
@@ -233,7 +287,7 @@ export function WordList({ words }: WordListProps) {
                       </div>
                     ) : (
                       <span className="text-[var(--color-muted)]">
-                        {truncateSentence(entry.sentence)}
+                        {truncateSentence(stripBold(entry.sentence))}
                       </span>
                     )}
                   </td>

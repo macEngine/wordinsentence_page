@@ -13,6 +13,7 @@ import {
   paginate,
   safeLink,
   sortWordsByDate,
+  stripBold,
   truncateSentence,
   wordKey,
   type WordEntry,
@@ -125,6 +126,22 @@ test('highlightWord marks inflections, case-insensitively, at word boundaries', 
   ]);
   // regex metacharacters in the word must not throw
   assert.doesNotThrow(() => highlightWord('a (b) c', '(b)'));
+});
+
+test('highlightWord prefers explicit **bold** markers; offsets are in stripped text', () => {
+  assert.deepEqual(highlightWord('They just **lashed** on them.', 'lash out'), [
+    { text: 'They just ', match: false, start: 0 },
+    { text: 'lashed', match: true, start: 10 },
+    { text: ' on them.', match: false, start: 16 },
+  ]);
+  assert.deepEqual(highlightWord('**Go** now', 'go'), [
+    { text: 'Go', match: true, start: 0 },
+    { text: ' now', match: false, start: 2 },
+  ]);
+});
+
+test('stripBold removes markers only', () => {
+  assert.equal(stripBold('a **b** c'), 'a b c');
 });
 
 test('safeLink only accepts http(s)', () => {

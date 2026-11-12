@@ -1,59 +1,47 @@
 [
   {
-    "word": "serendipity",
-    "sentence": "It was pure serendipity that we ran into each other at the station on the one day both of us had changed our plans.",
-    "source": "The Guardian",
-    "date": "2026-11-10",
-    "tags": ["noun", "C1"],
-    "meaning": "the luck of finding good things by accident",
-    "link": "https://www.theguardian.com/"
-  },
-  {
-    "word": "meander",
-    "sentence": "The river meanders through the valley for twenty miles before it reaches the sea.",
-    "source": "Walden",
-    "date": "2026-11-09",
-    "tags": ["verb", "B2"],
-    "meaning": "to follow a winding course"
-  },
-  {
-    "word": "ubiquitous",
-    "sentence": "Smartphones have become so ubiquitous that we barely notice them anymore.",
-    "source": "The Economist",
-    "date": "2026-11-08",
-    "tags": ["adjective", "C1"],
-    "meaning": "present or found everywhere"
-  },
-  {
-    "word": "candid",
-    "sentence": "She gave a candid account of the mistakes that led to the project's failure, sparing no one, least of all herself.",
-    "source": "The Guardian",
-    "date": "2026-11-07",
-    "tags": ["adjective", "B2"],
-    "meaning": "honest and direct, even when it is uncomfortable"
-  },
-  {
-    "word": "resilient",
-    "sentence": "Children are remarkably resilient; most of them recover from setbacks faster than adults expect.",
-    "source": "Podcast: Hidden Brain",
-    "date": "2026-11-05",
-    "tags": ["adjective", "B2"],
-    "meaning": "able to recover quickly from difficulties"
-  },
-  {
-    "word": "scrutinize",
-    "sentence": "Auditors will scrutinize every receipt, so keep the originals.",
-    "source": "The Economist",
-    "date": "2026-11-03",
-    "tags": ["verb", "C1"],
-    "meaning": "to examine very carefully"
-  },
-  {
-    "word": "ephemeral",
-    "sentence": "Fame on the internet is ephemeral: a video that is everywhere on Monday is forgotten by Friday.",
-    "source": "Walden",
-    "date": "2026-11-01",
-    "tags": ["adjective", "C1"],
-    "meaning": "lasting for a very short time"
+    "word": "wrangling",
+    "sentence": "So you make a bid for \"The Onion.\" It goes through some legal **wrangling** in the courts. Now, you have, I believe, celebrated the takeover.",
+    "date": "2026-07-07",
+    "source": "纽约时报",
+    "tags": [
+      "托福",
+      "GRE"
+    ],
+    "meaning": "wrangling 是动词 wrangle 的名词/动名词形式，意思是\"（长时间的）争论、争吵、扯皮\"，尤指为利益、条款而反复拉锯、僵持不下的争执。",
+    "phoneticUk": "/ˈræŋɡlɪŋ/",
+    "phoneticUs": "/ˈræŋɡlɪŋ/",
+    "image": "https://blogimg.niuge6.com/i/4421705295567.png",
+    "sourceDetail": "wrangling 是《纽约时报》（2026 年 7 月 7 日刊）播客 \"The Onion's Latest Joke: Taking Over Infowars\"（洋葱新闻的最新玩笑：接管 Infowars） 中出现的一个单词：",
+    "articleDate": "2026-07-07",
+    "translation": "于是你出价竞购\"洋葱新闻\"。此事在法庭上经历了一番法律扯皮拉锯。如今，我想，你们已经在庆祝这场接管了。",
+    "analysis": "wrangling 是动词 wrangle 的名词/动名词形式，意思是\"（长时间的）争论、争吵、扯皮\"，尤指为利益、条款而反复拉锯、僵持不下的争执。\n\nwrangle 本义之一是\"（在牧场）看管、驱赶牲口\"（美国西部的 wrangler 就是\"牧马人\"，也是牛仔裤品牌名的由来），后引申为\"激烈争辩、争夺\"——就像跟不听话的牲口较劲一样反复拉扯。它常与 legal（法律的）、political（政治的）搭配，指旷日持久的纠缠。与 argument（争论）相比，wrangling 更强调\"冗长、反复、僵持\"的拉锯过程；与 dispute（纠纷）相比，wrangling 口气更偏\"扯皮、缠斗\"，常带一点疲惫或不耐烦的意味。比如：\n\n- 法律上的扯皮 legal wrangling\n- 政治角力 political wrangling\n- 为细节争执不休 wrangling over details",
+    "synonyms": [
+      {
+        "word": "wrangling",
+        "nuance": "冗长反复的争执、扯皮",
+        "example": "months of legal wrangling"
+      },
+      {
+        "word": "dispute",
+        "nuance": "纠纷、争端",
+        "example": "a border dispute"
+      },
+      {
+        "word": "bickering",
+        "nuance": "（琐碎的）拌嘴、斗嘴",
+        "example": "constant bickering"
+      },
+      {
+        "word": "haggling",
+        "nuance": "（就价格）讨价还价",
+        "example": "haggling over the price"
+      }
+    ],
+    "dailySentence": {
+      "text": "Behind every calm agreement often lie months of quiet **wrangling**. What the public sees as a smooth handshake is usually the last page of a long story full of stubborn negotiation and hard-won compromise.",
+      "attribution": "改编自谈判实务随笔",
+      "translation": "每一份平静的协议背后，往往藏着数月无声的拉锯争执。公众看到的那次顺畅握手，通常只是一个漫长故事的最后一页，而这故事里满是固执的谈判与来之不易的妥协。"
+    }
   }
 ]

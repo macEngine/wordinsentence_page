@@ -21,7 +21,7 @@ import { Header } from '@/components/Header';
 import { StatsCards } from '@/components/StatsCards';
 import { ContributionHeatmap } from '@/components/ContributionHeatmap';
 import { WordList } from '@/components/WordList';
-import type { WordEntry } from '@/core/words';
+import type { WordPost } from '@/core/wordPost';
 import wordsData from '@/static/words.json';
 import { RouteMap } from '@/components/RouteMap';
 import { CalendarWidget } from '@/components/CalendarWidget';
@@ -186,7 +186,7 @@ function Dashboard() {
                   filter={filter}
                   onSelectActivity={selectActivity}
                 />
-                <WordList words={wordsData as WordEntry[]} />
+                <WordList words={wordsData as WordPost[]} />
               </div>
 
               {/* Right column */}

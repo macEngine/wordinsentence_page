@@ -14,6 +14,7 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
+import { format, resolveConfig } from 'prettier';
 import { parseWordPost } from '../src/core/wordPost.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,5 +44,13 @@ if (failures.length) {
   process.exit(1);
 }
 
-writeFileSync(outFile, JSON.stringify(entries, null, 2) + '\n');
+// Same formatting as `pnpm check` expects, so the generated file never fails CI.
+const prettierOptions = (await resolveConfig(outFile)) ?? {};
+writeFileSync(
+  outFile,
+  await format(JSON.stringify(entries), {
+    ...prettierOptions,
+    filepath: outFile,
+  })
+);
 console.log(`build-words: ${entries.length} posts -> ${outFile}`);

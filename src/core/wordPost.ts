@@ -42,6 +42,8 @@ export interface WordPost extends WordEntry {
   analysis?: string;
   synonyms?: Synonym[];
   dailySentence?: DailySentence;
+  /** The post body (frontmatter removed), rendered as-is on the Articles page. */
+  markdown: string;
 }
 
 export interface ParseOptions {
@@ -274,6 +276,7 @@ export function parseWordPost(
     synonyms,
     dailySentence,
     link: fm('link'),
+    markdown: body.trim(),
   };
   // drop undefined so the JSON stays compact
   return Object.fromEntries(

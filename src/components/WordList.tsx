@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import {
   ALL_WORDS_FILTER,
@@ -8,6 +8,7 @@ import {
   highlightWord,
   paginate,
   safeLink,
+  WORD_PAGE_SIZE,
   sortWordsByDate,
   stripBold,
   truncateSentence,
@@ -18,6 +19,9 @@ import type { WordPost } from '../core/wordPost';
 
 interface WordListProps {
   words: WordPost[];
+  /** Controlled selection: `wordKey()` of the expanded row, `null` for none. */
+  selectedKey: string | null;
+  onSelectKey: (key: string | null) => void;
 }
 
 const PILL_ON = 'bg-[var(--color-accent)] text-[var(--color-on-accent)]';
@@ -70,11 +74,11 @@ function Sentence({ sentence, word }: { sentence: string; word: string }) {
  * far too long for a cell, a row shows a truncated preview and expands in
  * place to the full sentence (word highlighted) when selected.
  */
-export function WordList({ words }: WordListProps) {
+export function WordList({ words, selectedKey, onSelectKey }: WordListProps) {
   const { t } = useLocale();
   const [filter, setFilter] = useState<WordFilter>(ALL_WORDS_FILTER);
   const [page, setPage] = useState(0);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const selectedRowRef = useRef<HTMLTableRowElement>(null);
 
   const sources = useMemo(() => collectSources(words), [words]);
   const tags = useMemo(() => collectTags(words), [words]);
@@ -84,13 +88,41 @@ export function WordList({ words }: WordListProps) {
   );
   const slice = paginate(sorted, page);
 
+  // A selection made elsewhere (Articles page) may sit outside the current
+  // filter or page: clear the filter, jump to its page, then scroll to it.
+  const [previousSelection, setPreviousSelection] = useState(selectedKey);
+  if (previousSelection !== selectedKey) {
+    setPreviousSelection(selectedKey);
+    if (selectedKey !== null) {
+      const inFiltered = sorted.findIndex((w) => wordKey(w) === selectedKey);
+      if (inFiltered >= 0) {
+        setPage(Math.floor(inFiltered / WORD_PAGE_SIZE));
+      } else {
+        const all = sortWordsByDate(words);
+        const idx = all.findIndex((w) => wordKey(w) === selectedKey);
+        if (idx >= 0) {
+          setFilter(ALL_WORDS_FILTER);
+          setPage(Math.floor(idx / WORD_PAGE_SIZE));
+        }
+      }
+    }
+  }
+  useEffect(() => {
+    if (selectedKey !== null) {
+      selectedRowRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [selectedKey, slice.page]);
+
   const changeFilter = (next: WordFilter) => {
     setFilter(next);
     setPage(0);
-    setSelectedKey(null);
+    onSelectKey(null);
   };
   const toggleRow = (key: string) =>
-    setSelectedKey((current) => (current === key ? null : key));
+    onSelectKey(selectedKey === key ? null : key);
 
   return (
     <div
@@ -183,6 +215,7 @@ export function WordList({ words }: WordListProps) {
               return (
                 <tr
                   key={key}
+                  ref={selected ? selectedRowRef : undefined}
                   tabIndex={0}
                   aria-selected={selected}
                   aria-expanded={selected}

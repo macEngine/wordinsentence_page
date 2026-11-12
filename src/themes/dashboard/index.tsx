@@ -23,6 +23,8 @@ import { ContributionHeatmap } from '@/components/ContributionHeatmap';
 import { WordList } from '@/components/WordList';
 import type { WordPost } from '@/core/wordPost';
 import wordsData from '@/static/words.json';
+
+const words = wordsData as WordPost[];
 import { RouteMap } from '@/components/RouteMap';
 import { CalendarWidget } from '@/components/CalendarWidget';
 import { ProfileCard } from '@/components/ProfileCard';
@@ -34,23 +36,25 @@ const TracksPage = lazy(() =>
     default: module.TracksPage,
   }))
 );
+const ArticlesPage = lazy(() =>
+  import('@/components/ArticlesPage').then((module) => ({
+    default: module.ArticlesPage,
+  }))
+);
 const SummaryPage = lazy(() =>
   import('@/components/SummaryPage').then((module) => ({
     default: module.SummaryPage,
   }))
 );
 
-type Page = 'home' | 'tracks' | 'summary';
-const pageFromPath = (): Page =>
-  window.location.pathname
+type Page = 'home' | 'articles' | 'tracks' | 'summary';
+const PAGES: Page[] = ['home', 'articles', 'tracks', 'summary'];
+const pageFromPath = (): Page => {
+  const path = window.location.pathname
     .slice(import.meta.env.BASE_URL.length)
-    .replace(/\/$/, '') === 'summary'
-    ? 'summary'
-    : window.location.pathname
-          .slice(import.meta.env.BASE_URL.length)
-          .replace(/\/$/, '') === 'tracks'
-      ? 'tracks'
-      : 'home';
+    .replace(/\/$/, '');
+  return PAGES.find((p) => p === path) ?? 'home';
+};
 
 function Dashboard() {
   const routeSectionRef = useRef<HTMLDivElement>(null);
@@ -64,6 +68,8 @@ function Dashboard() {
   );
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [page, setPage] = useState<Page>(pageFromPath);
+  // Word row opened in the home-page Word List (set by the Articles page).
+  const [selectedWordKey, setSelectedWordKey] = useState<string | null>(null);
 
   useEffect(() => {
     const onPopState = () => setPage(pageFromPath());
@@ -148,7 +154,16 @@ function Dashboard() {
           </main>
         }
       >
-        {page === 'summary' ? (
+        {page === 'articles' ? (
+          <ArticlesPage
+            posts={words}
+            onBack={() => navigate('home')}
+            onOpenWord={(key) => {
+              setSelectedWordKey(key);
+              navigate('home');
+            }}
+          />
+        ) : page === 'summary' ? (
           <SummaryPage
             activities={activities}
             onSelectActivity={(activity) => {
@@ -186,7 +201,11 @@ function Dashboard() {
                   filter={filter}
                   onSelectActivity={selectActivity}
                 />
-                <WordList words={wordsData as WordPost[]} />
+                <WordList
+                  words={words}
+                  selectedKey={selectedWordKey}
+                  onSelectKey={setSelectedWordKey}
+                />
               </div>
 
               {/* Right column */}

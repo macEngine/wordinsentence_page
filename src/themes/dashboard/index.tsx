@@ -20,7 +20,9 @@ import { useLocale } from '@/hooks/useLocale';
 import { Header } from '@/components/Header';
 import { StatsCards } from '@/components/StatsCards';
 import { ContributionHeatmap } from '@/components/ContributionHeatmap';
-import { ActivityLog } from '@/components/ActivityLog';
+import { WordList } from '@/components/WordList';
+import type { WordEntry } from '@/core/words';
+import wordsData from '@/static/words.json';
 import { RouteMap } from '@/components/RouteMap';
 import { CalendarWidget } from '@/components/CalendarWidget';
 import { ProfileCard } from '@/components/ProfileCard';
@@ -184,19 +186,7 @@ function Dashboard() {
                   filter={filter}
                   onSelectActivity={selectActivity}
                 />
-                <ActivityLog
-                  activities={filtered}
-                  years={years}
-                  year={year}
-                  setYear={(value) => {
-                    setYear(value);
-                    setSelectedActivity(null);
-                    setSelectedProvince(null);
-                  }}
-                  selectedActivity={selectedActivity}
-                  onSelectActivity={selectActivity}
-                  filter={filter}
-                />
+                <WordList words={wordsData as WordEntry[]} />
               </div>
 
               {/* Right column */}

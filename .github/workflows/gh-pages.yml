@@ -2,6 +2,9 @@ name: Publish GitHub Pages
 
 # Controls when the action will run.
 on:
+  # wordinsentence_page: a word is added by committing words/*.md, so publish on every push.
+  push:
+    branches: [master]
   workflow_dispatch:
     inputs:
       save_data_in_github_cache:

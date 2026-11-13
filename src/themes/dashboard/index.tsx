@@ -22,9 +22,12 @@ import { StatsCards } from '@/components/StatsCards';
 import { ContributionHeatmap } from '@/components/ContributionHeatmap';
 import { WordList } from '@/components/WordList';
 import type { WordPost } from '@/core/wordPost';
+import { findBySlug, postSlug } from '@/core/articles';
+import { sortWordsByDate } from '@/core/words';
 import wordsData from '@/static/words.json';
 
 const words = wordsData as WordPost[];
+const sortedWords = sortWordsByDate(words);
 import { RouteMap } from '@/components/RouteMap';
 import { CalendarWidget } from '@/components/CalendarWidget';
 import { ProfileCard } from '@/components/ProfileCard';
@@ -34,6 +37,11 @@ import { ChinaMap } from '@/components/ChinaMap';
 const TracksPage = lazy(() =>
   import('@/components/TracksPage').then((module) => ({
     default: module.TracksPage,
+  }))
+);
+const ArticleDetail = lazy(() =>
+  import('@/components/ArticleDetail').then((module) => ({
+    default: module.ArticleDetail,
   }))
 );
 const ArticlesPage = lazy(() =>
@@ -49,11 +57,32 @@ const SummaryPage = lazy(() =>
 
 type Page = 'home' | 'articles' | 'tracks' | 'summary';
 const PAGES: Page[] = ['home', 'articles', 'tracks', 'summary'];
-const pageFromPath = (): Page => {
-  const path = window.location.pathname
+interface Route {
+  page: Page;
+  /** `articles/<slug>` opens one article. */
+  slug: string | null;
+}
+const routeFromPath = (pathname: string): Route => {
+  const path = pathname
     .slice(import.meta.env.BASE_URL.length)
     .replace(/\/$/, '');
-  return PAGES.find((p) => p === path) ?? 'home';
+  const [head, ...rest] = path.split('/');
+  const page = PAGES.find((p) => p === head) ?? 'home';
+  const slug = page === 'articles' && rest.length ? rest.join('/') : null;
+  return { page, slug };
+};
+const routeToPath = ({ page, slug }: Route): string =>
+  `${import.meta.env.BASE_URL}${page === 'home' ? '' : page}${slug ? `/${slug}` : ''}`;
+/** public/404.html stores the deep-linked path (GitHub Pages) before bouncing to index. */
+const initialRoute = (): Route => {
+  const redirect = sessionStorage.getItem('redirect');
+  if (redirect) {
+    sessionStorage.removeItem('redirect');
+    const route = routeFromPath(redirect);
+    window.history.replaceState(null, '', routeToPath(route));
+    return route;
+  }
+  return routeFromPath(window.location.pathname);
 };
 
 function Dashboard() {
@@ -67,24 +96,22 @@ function Dashboard() {
     null
   );
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
-  const [page, setPage] = useState<Page>(pageFromPath);
-  // Word row opened in the home-page Word List (set by the Articles page).
-  const [selectedWordKey, setSelectedWordKey] = useState<string | null>(null);
+  const [route, setRoute] = useState<Route>(initialRoute);
+  const page = route.page;
 
   useEffect(() => {
-    const onPopState = () => setPage(pageFromPath());
+    const onPopState = () => setRoute(routeFromPath(window.location.pathname));
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
-  const navigate = (next: Page) => {
-    window.history.pushState(
-      null,
-      '',
-      `${import.meta.env.BASE_URL}${next === 'home' ? '' : next}`
-    );
-    setPage(next);
+  const navigate = (next: Page, slug: string | null = null) => {
+    const target = { page: next, slug };
+    window.history.pushState(null, '', routeToPath(target));
+    setRoute(target);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+  const openPost = (post: WordPost) => navigate('articles', postSlug(post));
+  const article = route.slug ? findBySlug(words, route.slug) : undefined;
 
   const selectProvince = useCallback((province: string | null) => {
     setSelectedProvince(province);
@@ -154,14 +181,18 @@ function Dashboard() {
           </main>
         }
       >
-        {page === 'articles' ? (
+        {page === 'articles' && article ? (
+          <ArticleDetail
+            post={article}
+            posts={sortedWords}
+            onBack={() => navigate('articles')}
+            onOpen={openPost}
+          />
+        ) : page === 'articles' ? (
           <ArticlesPage
             posts={words}
             onBack={() => navigate('home')}
-            onOpenWord={(key) => {
-              setSelectedWordKey(key);
-              navigate('home');
-            }}
+            onOpen={openPost}
           />
         ) : page === 'summary' ? (
           <SummaryPage
@@ -201,11 +232,7 @@ function Dashboard() {
                   filter={filter}
                   onSelectActivity={selectActivity}
                 />
-                <WordList
-                  words={words}
-                  selectedKey={selectedWordKey}
-                  onSelectKey={setSelectedWordKey}
-                />
+                <WordList words={words} onOpen={openPost} />
               </div>
 
               {/* Right column */}

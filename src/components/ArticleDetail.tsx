@@ -1,0 +1,182 @@
+import type { ReactNode } from 'react';
+import { useLocale } from '../hooks/useLocale';
+import type { WordPost } from '../core/wordPost';
+import { splitArticle } from '../core/articles';
+import { PostMarkdown } from './PostMarkdown';
+
+interface ArticleDetailProps {
+  post: WordPost;
+  /** Posts in display order, for prev / next. */
+  posts: WordPost[];
+  onBack: () => void;
+  onOpen: (post: WordPost) => void;
+}
+
+function Label({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-[10px] tracking-wider text-[var(--color-muted)] uppercase">
+      {children}
+    </p>
+  );
+}
+
+const BOX =
+  'rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]';
+
+/**
+ * V2EX-style topic page: breadcrumb + title box, then one box per `##`
+ * section of the post, with a sticky sidebar for date / source / word.
+ */
+export function ArticleDetail({
+  post,
+  posts,
+  onBack,
+  onOpen,
+}: ArticleDetailProps) {
+  const { t, locale } = useLocale();
+  const sections = splitArticle(post.markdown);
+  const idx = posts.indexOf(post);
+  const newer = idx > 0 ? posts[idx - 1] : null;
+  const older = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null;
+  const dateLabel = new Date(`${post.date}T00:00:00`).toLocaleDateString(
+    locale === 'zh' ? 'zh-CN' : 'en-US',
+    { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' }
+  );
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_340px]">
+        {/* Main column */}
+        <div className="flex min-w-0 flex-col gap-4">
+          {/* Topic box */}
+          <div className={`${BOX} p-4 sm:p-6`}>
+            <nav className="mb-2 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
+              <button
+                onClick={onBack}
+                className="hover:text-[var(--color-text)] hover:underline"
+              >
+                {t('articles')}
+              </button>
+              {post.source && (
+                <>
+                  <span aria-hidden>›</span>
+                  <span>{post.source}</span>
+                </>
+              )}
+            </nav>
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="font-mono text-2xl font-bold sm:text-3xl">
+                  {post.word}
+                </h1>
+                {(post.phoneticUk || post.phoneticUs) && (
+                  <p className="mt-1 text-sm text-[var(--color-muted)]">
+                    {post.phoneticUk && <span>英 {post.phoneticUk}</span>}
+                    {post.phoneticUk && post.phoneticUs && ' '}
+                    {post.phoneticUs && <span>美 {post.phoneticUs}</span>}
+                  </p>
+                )}
+                <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                  <span>{post.date}</span>
+                  {(post.tags ?? []).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </p>
+              </div>
+              {post.image && (
+                <img
+                  src={post.image}
+                  alt=""
+                  className="hidden h-20 w-20 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
+                />
+              )}
+            </div>
+            {post.meaning && (
+              <p className="mt-4 border-t border-[var(--color-border)] pt-3 text-sm leading-relaxed">
+                {post.meaning}
+              </p>
+            )}
+          </div>
+
+          {/* One box per section */}
+          {sections.map((section) => (
+            <section key={section.title || section.body} className={BOX}>
+              {section.title && (
+                <h2 className="border-b border-[var(--color-border)] px-4 py-2.5 text-sm font-semibold sm:px-6">
+                  {section.title}
+                </h2>
+              )}
+              <div className="px-4 py-3 sm:px-6 sm:py-4">
+                <PostMarkdown>{section.body}</PostMarkdown>
+              </div>
+            </section>
+          ))}
+
+          {/* Prev / next */}
+          <div className="flex items-center justify-between text-sm">
+            {newer ? (
+              <button
+                onClick={() => onOpen(newer)}
+                className="text-[var(--color-muted)] hover:text-[var(--color-text)]"
+              >
+                ← <span className="font-mono">{newer.word}</span>
+              </button>
+            ) : (
+              <span />
+            )}
+            {older ? (
+              <button
+                onClick={() => onOpen(older)}
+                className="text-[var(--color-muted)] hover:text-[var(--color-text)]"
+              >
+                <span className="font-mono">{older.word}</span> →
+              </button>
+            ) : (
+              <span />
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="order-first flex flex-col gap-4 lg:sticky lg:top-24 lg:order-none">
+          <div className={`${BOX} p-4`}>
+            <Label>{t('date')}</Label>
+            <p className="min-h-[1.75rem] font-mono text-lg font-bold">
+              {dateLabel}
+            </p>
+            <div className="mt-3">
+              <Label>{t('source')}</Label>
+            </div>
+            <p className="min-h-[1.25rem] text-sm leading-relaxed">
+              {post.sourceDetail ?? post.source ?? '\u00a0'}
+            </p>
+          </div>
+          {post.synonyms && post.synonyms.length > 0 && (
+            <div className={`${BOX} px-4 py-3`}>
+              <Label>{locale === 'zh' ? '近义词' : 'Synonyms'}</Label>
+              <ul className="mt-1.5 space-y-1 text-xs">
+                {post.synonyms
+                  .filter((s) => s.word !== post.word)
+                  .map((s) => (
+                    <li key={s.word} className="flex gap-2">
+                      <span className="shrink-0 font-mono font-medium">
+                        {s.word}
+                      </span>
+                      <span className="text-[var(--color-muted)]">
+                        {s.nuance}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

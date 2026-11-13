@@ -1,27 +1,21 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import {
   ALL_WORDS_FILTER,
   collectSources,
   collectTags,
   filterWords,
-  highlightWord,
   paginate,
-  safeLink,
-  WORD_PAGE_SIZE,
   sortWordsByDate,
-  stripBold,
-  truncateSentence,
-  wordKey,
   type WordFilter,
 } from '../core/words';
 import type { WordPost } from '../core/wordPost';
+import { PostList } from './PostList';
 
 interface WordListProps {
   words: WordPost[];
-  /** Controlled selection: `wordKey()` of the expanded row, `null` for none. */
-  selectedKey: string | null;
-  onSelectKey: (key: string | null) => void;
+  /** Open the article detail page for a word. */
+  onOpen: (post: WordPost) => void;
 }
 
 const PILL_ON = 'bg-[var(--color-accent)] text-[var(--color-on-accent)]';
@@ -48,37 +42,15 @@ function Pill({
   );
 }
 
-function Sentence({ sentence, word }: { sentence: string; word: string }) {
-  return (
-    <>
-      {highlightWord(sentence, word).map((seg) =>
-        seg.match ? (
-          <mark
-            key={seg.start}
-            className="rounded bg-[var(--color-accent)]/20 px-0.5 font-semibold text-[var(--color-text)]"
-          >
-            {seg.text}
-          </mark>
-        ) : (
-          <span key={seg.start}>{seg.text}</span>
-        )
-      )}
-    </>
-  );
-}
-
 /**
- * Replaces running_page's ActivityLog. Same card, same pill rows, same
- * table + pagination; the two pill rows are derived from the data (source,
- * tag) instead of hard-coded distance thresholds, and because a sentence is
- * far too long for a cell, a row shows a truncated preview and expands in
- * place to the full sentence (word highlighted) when selected.
+ * Replaces running_page's ActivityLog: same card, pill rows and pagination,
+ * but the body is a V2EX-style topic list (PostList) and a row opens the
+ * article detail page. Pill rows come from the data (source, tag).
  */
-export function WordList({ words, selectedKey, onSelectKey }: WordListProps) {
+export function WordList({ words, onOpen }: WordListProps) {
   const { t } = useLocale();
   const [filter, setFilter] = useState<WordFilter>(ALL_WORDS_FILTER);
   const [page, setPage] = useState(0);
-  const selectedRowRef = useRef<HTMLTableRowElement>(null);
 
   const sources = useMemo(() => collectSources(words), [words]);
   const tags = useMemo(() => collectTags(words), [words]);
@@ -88,41 +60,10 @@ export function WordList({ words, selectedKey, onSelectKey }: WordListProps) {
   );
   const slice = paginate(sorted, page);
 
-  // A selection made elsewhere (Articles page) may sit outside the current
-  // filter or page: clear the filter, jump to its page, then scroll to it.
-  const [previousSelection, setPreviousSelection] = useState(selectedKey);
-  if (previousSelection !== selectedKey) {
-    setPreviousSelection(selectedKey);
-    if (selectedKey !== null) {
-      const inFiltered = sorted.findIndex((w) => wordKey(w) === selectedKey);
-      if (inFiltered >= 0) {
-        setPage(Math.floor(inFiltered / WORD_PAGE_SIZE));
-      } else {
-        const all = sortWordsByDate(words);
-        const idx = all.findIndex((w) => wordKey(w) === selectedKey);
-        if (idx >= 0) {
-          setFilter(ALL_WORDS_FILTER);
-          setPage(Math.floor(idx / WORD_PAGE_SIZE));
-        }
-      }
-    }
-  }
-  useEffect(() => {
-    if (selectedKey !== null) {
-      selectedRowRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
-  }, [selectedKey, slice.page]);
-
   const changeFilter = (next: WordFilter) => {
     setFilter(next);
     setPage(0);
-    onSelectKey(null);
   };
-  const toggleRow = (key: string) =>
-    onSelectKey(selectedKey === key ? null : key);
 
   return (
     <div
@@ -182,157 +123,7 @@ export function WordList({ words, selectedKey, onSelectKey }: WordListProps) {
         </div>
       )}
 
-      <p className="table-scroll-hint mb-2 text-xs text-[var(--color-muted)]">
-        {t('wordHint')}
-      </p>
-
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b border-[var(--color-border)] text-left text-[var(--color-muted)]">
-              <th className="pb-3 font-medium">{t('date')}</th>
-              <th className="pb-3 font-medium">{t('word')}</th>
-              <th className="pb-3 font-medium">{t('sentence')}</th>
-              <th className="pb-3 font-medium">{t('source')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!slice.items.length && (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="py-10 text-center text-[var(--color-muted)]"
-                >
-                  {t('noWords')}
-                </td>
-              </tr>
-            )}
-            {slice.items.map((entry) => {
-              const key = wordKey(entry);
-              const selected = key === selectedKey;
-              const link = safeLink(entry.link);
-              return (
-                <tr
-                  key={key}
-                  ref={selected ? selectedRowRef : undefined}
-                  tabIndex={0}
-                  aria-selected={selected}
-                  aria-expanded={selected}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      toggleRow(key);
-                    }
-                  }}
-                  onClick={() => toggleRow(key)}
-                  className={`cursor-pointer border-b border-[var(--color-border)]/30 align-top transition-colors ${
-                    selected
-                      ? 'border-l-2 border-l-[var(--color-accent)] bg-[var(--color-accent)]/10'
-                      : 'hover:bg-[var(--color-bg)]'
-                  }`}
-                >
-                  <td className="py-3 whitespace-nowrap text-[var(--color-muted)]">
-                    {entry.date}
-                  </td>
-                  <td className="py-3 font-mono font-medium whitespace-nowrap">
-                    {entry.word}
-                  </td>
-                  <td className="py-3">
-                    {selected ? (
-                      <div className="max-w-[640px] space-y-3">
-                        <p className="leading-relaxed">
-                          <Sentence
-                            sentence={entry.sentence}
-                            word={entry.word}
-                          />
-                        </p>
-                        {entry.translation && (
-                          <p className="text-xs leading-relaxed text-[var(--color-muted)]">
-                            {entry.translation}
-                          </p>
-                        )}
-                        {(entry.phoneticUk || entry.phoneticUs) && (
-                          <p className="text-xs text-[var(--color-muted)]">
-                            {entry.phoneticUk && (
-                              <span>英 {entry.phoneticUk}</span>
-                            )}
-                            {entry.phoneticUk && entry.phoneticUs && ' '}
-                            {entry.phoneticUs && (
-                              <span>美 {entry.phoneticUs}</span>
-                            )}
-                          </p>
-                        )}
-                        {entry.meaning && (
-                          <p className="text-xs leading-relaxed">
-                            <span className="font-medium">{t('meaning')}:</span>{' '}
-                            {entry.meaning}
-                          </p>
-                        )}
-                        {entry.synonyms && entry.synonyms.length > 0 && (
-                          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-                            {entry.synonyms.map((syn) => (
-                              <Fragment key={syn.word}>
-                                <dt className="font-mono font-medium">
-                                  {syn.word}
-                                </dt>
-                                <dd className="text-[var(--color-muted)]">
-                                  {syn.nuance}
-                                  {syn.example && (
-                                    <span className="ml-1 italic">
-                                      · {syn.example}
-                                    </span>
-                                  )}
-                                </dd>
-                              </Fragment>
-                            ))}
-                          </dl>
-                        )}
-                        {entry.dailySentence && (
-                          <blockquote className="border-l-2 border-[var(--color-border)] pl-3 text-xs leading-relaxed text-[var(--color-muted)]">
-                            <Sentence
-                              sentence={entry.dailySentence.text}
-                              word={entry.word}
-                            />
-                            {entry.dailySentence.attribution && (
-                              <span className="ml-1">
-                                —— {entry.dailySentence.attribution}
-                              </span>
-                            )}
-                          </blockquote>
-                        )}
-                        {entry.sourceDetail && (
-                          <p className="text-xs text-[var(--color-muted)]">
-                            {entry.sourceDetail}
-                          </p>
-                        )}
-                        {link && (
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(event) => event.stopPropagation()}
-                            className="text-xs text-[var(--color-accent)] hover:underline"
-                          >
-                            {t('openSource')} ↗
-                          </a>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-[var(--color-muted)]">
-                        {truncateSentence(stripBold(entry.sentence))}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 whitespace-nowrap text-[var(--color-muted)]">
-                    {entry.source ?? '--'}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <PostList posts={slice.items} onOpen={onOpen} emptyText={t('noWords')} />
 
       {/* Pagination */}
       <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border)] pt-4">

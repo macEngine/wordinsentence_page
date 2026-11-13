@@ -77,6 +77,54 @@ export function filterArticles(
   });
 }
 
+/** URL slug for a post: `2026-07-07-wrangling`. */
+export function postSlug(post: WordPost): string {
+  const word = post.word
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return `${post.date}-${word}`;
+}
+
+export function findBySlug(
+  posts: WordPost[],
+  slug: string
+): WordPost | undefined {
+  return posts.find((p) => postSlug(p) === slug);
+}
+
+export interface ArticleSection {
+  /** Heading text with its emoji, e.g. "📰 今日例句". */
+  title: string;
+  /** Markdown body of the section. */
+  body: string;
+}
+
+/**
+ * Split a post into its `## ` sections so the detail page can show each in
+ * its own box (V2EX-style: topic box, then one box per block). Text before
+ * the first heading, if any, becomes an untitled first section.
+ */
+export function splitArticle(markdown: string): ArticleSection[] {
+  const sections: ArticleSection[] = [];
+  const re = /^##\s+(.+)$/gm;
+  let last: ArticleSection | null = null;
+  let cursor = 0;
+  for (const m of markdown.matchAll(re)) {
+    const start = m.index ?? 0;
+    const before = markdown.slice(cursor, start).trim();
+    if (last) last.body = before;
+    else if (before) sections.push({ title: '', body: before });
+    last = { title: m[1].trim(), body: '' };
+    sections.push(last);
+    cursor = start + m[0].length;
+  }
+  const tail = markdown.slice(cursor).trim();
+  if (last) last.body = tail;
+  else if (tail) sections.push({ title: '', body: tail });
+  return sections;
+}
+
 /** Toggle one tag in a multi-select list. */
 export function toggleTag(tags: string[], tag: string): string[] {
   return tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag];

@@ -4,7 +4,10 @@ import {
   ALL_ARTICLES_FILTER,
   collectYears,
   filterArticles,
+  findBySlug,
+  postSlug,
   queryTerms,
+  splitArticle,
   toggleTag,
 } from '../src/core/articles.ts';
 import type { WordPost } from '../src/core/wordPost.ts';
@@ -81,4 +84,30 @@ test('filterArticles: year / source / tags(AND) / query(AND)', () => {
 test('toggleTag adds then removes', () => {
   assert.deepEqual(toggleTag([], 'a'), ['a']);
   assert.deepEqual(toggleTag(['a', 'b'], 'a'), ['b']);
+});
+
+test('postSlug is date + lowercase word, phrases hyphenated', () => {
+  assert.equal(postSlug(posts[0]), '2026-07-07-wrangling');
+  assert.equal(postSlug(posts[1]), '2026-06-24-lash-out');
+  assert.equal(
+    postSlug(post({ word: 'Déjà vu!', date: '2026-01-02' })),
+    '2026-01-02-d-j-vu'
+  );
+  assert.equal(findBySlug(posts, '2026-06-24-lash-out')?.word, 'lash out');
+  assert.equal(findBySlug(posts, 'nope'), undefined);
+});
+
+test('splitArticle splits on ## headings and keeps bodies', () => {
+  const md =
+    'intro\n\n## 📖 词汇卡片\n\n![](x.png)\n\n**w**\n\n## 📰 今日例句\n\n> quote\n\n## 🔄 近义词辨析\n\n| a | b |\n';
+  assert.deepEqual(splitArticle(md), [
+    { title: '', body: 'intro' },
+    { title: '📖 词汇卡片', body: '![](x.png)\n\n**w**' },
+    { title: '📰 今日例句', body: '> quote' },
+    { title: '🔄 近义词辨析', body: '| a | b |' },
+  ]);
+  assert.deepEqual(splitArticle('just text'), [
+    { title: '', body: 'just text' },
+  ]);
+  assert.deepEqual(splitArticle(''), []);
 });

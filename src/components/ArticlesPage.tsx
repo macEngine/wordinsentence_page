@@ -164,61 +164,8 @@ export function ArticlesPage({ posts, onBack, onOpenWord }: ArticlesPageProps) {
         <h1 className="shrink-0 text-lg font-bold">{t('articles')}</h1>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[340px_1fr]">
-        {/* Left: focus + selected word */}
-        <div className="flex flex-col gap-4 lg:sticky lg:top-24">
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-            <Label>{t('date')}</Label>
-            <p className="min-h-[1.75rem] font-mono text-lg font-bold">
-              {selected ? dateLabel(selected.date) : '\u00a0'}
-            </p>
-            <Label>
-              <span className="mt-3 block">{t('source')}</span>
-            </Label>
-            <p className="min-h-[1.25rem] truncate text-sm">
-              {selected?.sourceDetail ?? selected?.source ?? '\u00a0'}
-            </p>
-          </div>
-
-          {selected && (
-            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
-              <Label>{t('selectedWord')}</Label>
-              <button
-                onClick={() => onOpenWord(wordKey(selected))}
-                className="mt-1 block font-mono text-lg font-bold text-[var(--color-accent)] hover:underline"
-                title={t('openWordDetail')}
-              >
-                {selected.word} →
-              </button>
-              {(selected.phoneticUk || selected.phoneticUs) && (
-                <p className="mt-0.5 text-xs text-[var(--color-muted)]">
-                  {selected.phoneticUk && <span>英 {selected.phoneticUk}</span>}
-                  {selected.phoneticUk && selected.phoneticUs && ' '}
-                  {selected.phoneticUs && <span>美 {selected.phoneticUs}</span>}
-                </p>
-              )}
-              {selected.meaning && (
-                <p className="mt-2 text-xs leading-relaxed">
-                  {selected.meaning}
-                </p>
-              )}
-              {selected.tags && selected.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {selected.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-[10px] text-[var(--color-muted)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Right: filters + rendered posts */}
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_340px]">
+        {/* Left: filters + rendered posts */}
         <div className="min-w-0">
           <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
             {/* Year pills + source filter */}
@@ -370,6 +317,58 @@ export function ArticlesPage({ posts, onBack, onOpenWord }: ArticlesPageProps) {
               </span>
             </div>
           </div>
+        </div>
+        {/* Right: focus + selected word (sticky sidebar) */}
+        <div className="order-first flex flex-col gap-4 lg:sticky lg:top-24 lg:order-none">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+            <Label>{t('date')}</Label>
+            <p className="min-h-[1.75rem] font-mono text-lg font-bold">
+              {selected ? dateLabel(selected.date) : '\u00a0'}
+            </p>
+            <Label>
+              <span className="mt-3 block">{t('source')}</span>
+            </Label>
+            <p className="min-h-[1.25rem] truncate text-sm">
+              {selected?.sourceDetail ?? selected?.source ?? '\u00a0'}
+            </p>
+          </div>
+
+          {selected && (
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+              <Label>{t('selectedWord')}</Label>
+              <button
+                onClick={() => onOpenWord(wordKey(selected))}
+                className="mt-1 block font-mono text-lg font-bold text-[var(--color-accent)] hover:underline"
+                title={t('openWordDetail')}
+              >
+                {selected.word} →
+              </button>
+              {(selected.phoneticUk || selected.phoneticUs) && (
+                <p className="mt-0.5 text-xs text-[var(--color-muted)]">
+                  {selected.phoneticUk && <span>英 {selected.phoneticUk}</span>}
+                  {selected.phoneticUk && selected.phoneticUs && ' '}
+                  {selected.phoneticUs && <span>美 {selected.phoneticUs}</span>}
+                </p>
+              )}
+              {selected.meaning && (
+                <p className="mt-2 text-xs leading-relaxed">
+                  {selected.meaning}
+                </p>
+              )}
+              {selected.tags && selected.tags.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {selected.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-[10px] text-[var(--color-muted)]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

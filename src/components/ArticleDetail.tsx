@@ -76,7 +76,7 @@ export function ArticleDetail({
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <h1 className="text-lg font-bold sm:text-xl">{post.title}</h1>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
                     <span>{post.date}</span>
                     {(post.tags ?? []).map((tag) => (
                       <button

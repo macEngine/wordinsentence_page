@@ -97,6 +97,7 @@ test('parseWordPost on a post without frontmatter (owner sample)', () => {
 
 test('frontmatter overrides body-derived fields', () => {
   const md = `---
+title: "自定义标题"
 word: "wrangle"
 date: 2026-11-08T15:03:00+08:00
 article_date: 2026-07-01
@@ -106,6 +107,7 @@ gloss: "扯皮"
 ${wrangling}`;
   const e = parseWordPost(md);
   assert.equal(e.word, 'wrangle');
+  assert.equal(e.title, '自定义标题');
   assert.equal(e.date, '2026-11-08');
   assert.equal(e.articleDate, '2026-07-01');
   assert.deepEqual(e.tags, ['六级']);

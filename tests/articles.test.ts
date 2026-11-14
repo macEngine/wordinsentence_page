@@ -14,6 +14,7 @@ import type { WordPost } from '../src/core/wordPost.ts';
 
 const post = (over: Partial<WordPost>): WordPost => ({
   word: 'w',
+  title: 'w',
   sentence: 'S',
   date: '2026-01-01',
   markdown: '',

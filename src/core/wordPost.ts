@@ -29,6 +29,8 @@ export interface DailySentence {
 }
 
 export interface WordPost extends WordEntry {
+  /** Post title: frontmatter `title`, else "外刊每日一词：<word>". */
+  title: string;
   phoneticUk?: string;
   phoneticUs?: string;
   image?: string;
@@ -261,6 +263,7 @@ export function parseWordPost(
 
   const entry: WordPost = {
     word,
+    title: fm('title') ?? `外刊每日一词：${word}`,
     sentence,
     date,
     source: example.source,

@@ -43,8 +43,9 @@ export function ArticleDetail({
   const idx = posts.indexOf(post);
   const newer = idx > 0 ? posts[idx - 1] : null;
   const older = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null;
+  // Always Chinese: the posts are Chinese, and the owner wants it that way.
   const dateLabel = new Date(`${post.date}T00:00:00`).toLocaleDateString(
-    locale === 'zh' ? 'zh-CN' : 'en-US',
+    'zh-CN',
     { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' }
   );
 
@@ -72,16 +73,9 @@ export function ArticleDetail({
               </nav>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h1 className="font-mono text-2xl font-bold sm:text-3xl">
-                    {post.word}
+                  <h1 className="text-2xl font-bold sm:text-3xl">
+                    {post.title}
                   </h1>
-                  {(post.phoneticUk || post.phoneticUs) && (
-                    <p className="mt-1 text-sm text-[var(--color-muted)]">
-                      {post.phoneticUk && <span>英 {post.phoneticUk}</span>}
-                      {post.phoneticUk && post.phoneticUs && ' '}
-                      {post.phoneticUs && <span>美 {post.phoneticUs}</span>}
-                    </p>
-                  )}
                   <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
                     <span>{post.date}</span>
                     {(post.tags ?? []).map((tag) => (

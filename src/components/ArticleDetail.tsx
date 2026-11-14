@@ -11,16 +11,23 @@ interface ArticleDetailProps {
   onOpen: (post: WordPost) => void;
 }
 
-function Label({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-[10px] tracking-wider text-[var(--color-muted)] uppercase">
-      {children}
-    </p>
-  );
-}
-
 const BOX =
   'rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]';
+
+/** Sidebar box with a narrow "→ Title" header bar. */
+function SideCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className={BOX}>
+      <h2 className="border-b border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold">
+        <span aria-hidden className="mr-1.5 text-[var(--color-accent)]">
+          →
+        </span>
+        {title}
+      </h2>
+      <div className="px-3 py-2.5">{children}</div>
+    </div>
+  );
+}
 
 /**
  * V2EX-style topic page: breadcrumb + title box, then the whole post in one
@@ -99,12 +106,12 @@ export function ArticleDetail({
                 {post.meaning}
               </p>
             )}
-          </div>
 
-          {/* The whole post, as one article */}
-          <article className={`${BOX} px-4 py-3 sm:px-6 sm:py-4`}>
-            <PostMarkdown>{post.markdown}</PostMarkdown>
-          </article>
+            {/* The whole post, in the same box */}
+            <article className="mt-4 border-t border-[var(--color-border)] pt-4">
+              <PostMarkdown>{post.markdown}</PostMarkdown>
+            </article>
+          </div>
 
           {/* Prev / next */}
           <div className="flex items-center justify-between text-sm">
@@ -132,25 +139,18 @@ export function ArticleDetail({
         </div>
 
         {/* Sidebar */}
-        <div className="order-first flex flex-col gap-4 lg:sticky lg:top-24 lg:order-none">
-          <div className={`${BOX} p-4`}>
-            <Label>{t('date')}</Label>
-            <p className="min-h-[1.75rem] font-mono text-lg font-bold">
-              {dateLabel}
-            </p>
-            <div className="mt-3">
-              <Label>{t('source')}</Label>
-            </div>
-            <p className="min-h-[1.25rem] text-sm leading-relaxed">
+        <div className="order-first flex flex-col gap-4 lg:sticky lg:top-[var(--header-offset)] lg:order-none">
+          <SideCard title={t('date')}>
+            <p className="font-mono text-base font-bold">{dateLabel}</p>
+          </SideCard>
+          <SideCard title={t('source')}>
+            <p className="text-sm leading-relaxed">
               {post.sourceDetail ?? post.source ?? '\u00a0'}
             </p>
-          </div>
+          </SideCard>
           {post.synonyms && post.synonyms.length > 0 && (
-            <div className={BOX}>
-              <h2 className="border-b border-[var(--color-border)] px-4 py-2.5 text-sm font-semibold">
-                {locale === 'zh' ? '近义词' : 'Synonyms'}
-              </h2>
-              <ul className="space-y-1 px-4 py-3 text-xs">
+            <SideCard title={locale === 'zh' ? '近义词' : 'Synonyms'}>
+              <ul className="space-y-1 text-xs">
                 {post.synonyms
                   .filter((s) => s.word !== post.word)
                   .map((s) => (
@@ -164,7 +164,7 @@ export function ArticleDetail({
                     </li>
                   ))}
               </ul>
-            </div>
+            </SideCard>
           )}
         </div>
       </div>

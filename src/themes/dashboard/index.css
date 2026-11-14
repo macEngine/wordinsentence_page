@@ -118,3 +118,9 @@ body {
 .dashboard .exporting .track-cell {
   content-visibility: visible;
 }
+
+/* Sticky sidebars: header height (57px) + page top padding (sm:py-6 = 1.5rem),
+   so a sticky column starts flush with the main column instead of 15px lower. */
+.dashboard {
+  --header-offset: calc(57px + 1.5rem);
+}

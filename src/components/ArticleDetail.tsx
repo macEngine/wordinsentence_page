@@ -83,7 +83,7 @@ export function ArticleDetail({
                         key={tag}
                         onClick={() => onOpenTag(tag)}
                         title={`${t('articles')} › ${tag}`}
-                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px leading-tight hover:border-[var(--color-accent)] hover:text-[var(--color-text)]"
+                        className="tag-chip rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px leading-tight hover:border-[var(--color-accent)] hover:text-[var(--color-text)]"
                       >
                         {tag}
                       </button>

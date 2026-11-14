@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
-import { splitArticle } from '../core/articles';
 import { PostMarkdown } from './PostMarkdown';
 
 interface ArticleDetailProps {
@@ -24,8 +23,8 @@ const BOX =
   'rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]';
 
 /**
- * V2EX-style topic page: breadcrumb + title box, then one box per `##`
- * section of the post, with a sticky sidebar for date / source / word.
+ * V2EX-style topic page: breadcrumb + title box, then the whole post in one
+ * box, with a sticky sidebar for date / source / synonyms.
  */
 export function ArticleDetail({
   post,
@@ -34,7 +33,6 @@ export function ArticleDetail({
   onOpen,
 }: ArticleDetailProps) {
   const { t, locale } = useLocale();
-  const sections = splitArticle(post.markdown);
   const idx = posts.indexOf(post);
   const newer = idx > 0 ? posts[idx - 1] : null;
   const older = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null;
@@ -103,19 +101,10 @@ export function ArticleDetail({
             )}
           </div>
 
-          {/* One box per section */}
-          {sections.map((section) => (
-            <section key={section.title || section.body} className={BOX}>
-              {section.title && (
-                <h2 className="border-b border-[var(--color-border)] px-4 py-2.5 text-sm font-semibold sm:px-6">
-                  {section.title}
-                </h2>
-              )}
-              <div className="px-4 py-3 sm:px-6 sm:py-4">
-                <PostMarkdown>{section.body}</PostMarkdown>
-              </div>
-            </section>
-          ))}
+          {/* The whole post, as one article */}
+          <article className={`${BOX} px-4 py-3 sm:px-6 sm:py-4`}>
+            <PostMarkdown>{post.markdown}</PostMarkdown>
+          </article>
 
           {/* Prev / next */}
           <div className="flex items-center justify-between text-sm">
@@ -157,9 +146,11 @@ export function ArticleDetail({
             </p>
           </div>
           {post.synonyms && post.synonyms.length > 0 && (
-            <div className={`${BOX} px-4 py-3`}>
-              <Label>{locale === 'zh' ? '近义词' : 'Synonyms'}</Label>
-              <ul className="mt-1.5 space-y-1 text-xs">
+            <div className={BOX}>
+              <h2 className="border-b border-[var(--color-border)] px-4 py-2.5 text-sm font-semibold">
+                {locale === 'zh' ? '近义词' : 'Synonyms'}
+              </h2>
+              <ul className="space-y-1 px-4 py-3 text-xs">
                 {post.synonyms
                   .filter((s) => s.word !== post.word)
                   .map((s) => (

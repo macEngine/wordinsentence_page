@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0b2a4a"/>
+  <!-- highlighted word -->
+  <rect x="11" y="18" width="42" height="24" rx="5" fill="#d4ff00"/>
+  <text x="32" y="36.5" text-anchor="middle" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-weight="800" font-size="22" fill="#0b2a4a">W</text>
+  <!-- the rest of the sentence -->
+  <rect x="11" y="48" width="26" height="4" rx="2" fill="#ffffff" opacity="0.85"/>
+  <rect x="41" y="48" width="12" height="4" rx="2" fill="#ffffff" opacity="0.5"/>
+</svg>

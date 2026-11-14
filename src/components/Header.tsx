@@ -32,7 +32,8 @@ export function Header({ dark, toggleTheme, page, onNavigate }: HeaderProps) {
           title={locale === 'zh' ? '回到首页' : 'Go to home'}
           className="cursor-pointer border-0 bg-transparent p-0 text-xl font-bold text-[var(--color-text)]"
         >
-          RUNNING<span className="text-[var(--color-run)]">.</span>PAGE
+          WORD<span className="text-[var(--color-run)]">·</span>IN
+          <span className="text-[var(--color-run)]">·</span>SENTENCE
         </button>
 
         {/* Right nav */}

@@ -270,7 +270,7 @@ function Dashboard() {
       </Suspense>
 
       <footer className="border-t border-[var(--color-border)] py-6 text-center text-sm text-[var(--color-muted)]">
-        &copy; {currentYear} Running Page 3.0
+        &copy; {currentYear} Word in Sentence
       </footer>
     </div>
   );

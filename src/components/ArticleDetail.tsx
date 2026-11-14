@@ -54,61 +54,58 @@ export function ArticleDetail({
         {/* Main column */}
         <div className="flex min-w-0 flex-col gap-4">
           {/* Topic box */}
-          <div className={`${BOX} p-4 sm:p-6`}>
-            <nav className="mb-2 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
-              <button
-                onClick={onBack}
-                className="hover:text-[var(--color-text)] hover:underline"
-              >
-                {t('articles')}
-              </button>
-              {post.source && (
-                <>
-                  <span aria-hidden>›</span>
-                  <span>{post.source}</span>
-                </>
-              )}
-            </nav>
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <h1 className="font-mono text-2xl font-bold sm:text-3xl">
-                  {post.word}
-                </h1>
-                {(post.phoneticUk || post.phoneticUs) && (
-                  <p className="mt-1 text-sm text-[var(--color-muted)]">
-                    {post.phoneticUk && <span>英 {post.phoneticUk}</span>}
-                    {post.phoneticUk && post.phoneticUs && ' '}
-                    {post.phoneticUs && <span>美 {post.phoneticUs}</span>}
-                  </p>
+          <div className={BOX}>
+            <div className="p-4 sm:p-6">
+              <nav className="mb-2 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
+                <button
+                  onClick={onBack}
+                  className="hover:text-[var(--color-text)] hover:underline"
+                >
+                  {t('articles')}
+                </button>
+                {post.source && (
+                  <>
+                    <span aria-hidden>›</span>
+                    <span>{post.source}</span>
+                  </>
                 )}
-                <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
-                  <span>{post.date}</span>
-                  {(post.tags ?? []).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </p>
+              </nav>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h1 className="font-mono text-2xl font-bold sm:text-3xl">
+                    {post.word}
+                  </h1>
+                  {(post.phoneticUk || post.phoneticUs) && (
+                    <p className="mt-1 text-sm text-[var(--color-muted)]">
+                      {post.phoneticUk && <span>英 {post.phoneticUk}</span>}
+                      {post.phoneticUk && post.phoneticUs && ' '}
+                      {post.phoneticUs && <span>美 {post.phoneticUs}</span>}
+                    </p>
+                  )}
+                  <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                    <span>{post.date}</span>
+                    {(post.tags ?? []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+                {post.image && (
+                  <img
+                    src={post.image}
+                    alt=""
+                    className="hidden h-20 w-20 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
+                  />
+                )}
               </div>
-              {post.image && (
-                <img
-                  src={post.image}
-                  alt=""
-                  className="hidden h-20 w-20 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
-                />
-              )}
             </div>
-            {post.meaning && (
-              <p className="mt-4 border-t border-[var(--color-border)] pt-3 text-sm leading-relaxed">
-                {post.meaning}
-              </p>
-            )}
 
-            {/* The whole post, in the same box */}
-            <article className="mt-4 border-t border-[var(--color-border)] pt-4">
+            {/* The whole post; the divider runs edge to edge */}
+            <article className="border-t border-[var(--color-border)] px-4 py-4 sm:px-6 sm:py-5">
               <PostMarkdown>{post.markdown}</PostMarkdown>
             </article>
           </div>

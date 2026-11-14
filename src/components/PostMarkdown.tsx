@@ -58,19 +58,23 @@ const markdownComponents = {
   ),
   table: ({ children }: { children?: ReactNode }) => (
     <div className="my-3 overflow-x-auto">
-      <table className="w-full text-sm">{children}</table>
+      <table className="w-full border-collapse border border-[var(--color-border)] text-sm">
+        {children}
+      </table>
     </div>
   ),
   thead: ({ children }: { children?: ReactNode }) => (
-    <thead className="border-b border-[var(--color-border)] text-left text-xs text-[var(--color-muted)]">
+    <thead className="bg-[var(--color-bg)] text-left text-xs text-[var(--color-muted)]">
       {children}
     </thead>
   ),
   th: ({ children }: { children?: ReactNode }) => (
-    <th className="py-1.5 pr-3 font-medium">{children}</th>
+    <th className="border border-[var(--color-border)] px-3 py-1.5 font-medium">
+      {children}
+    </th>
   ),
   td: ({ children }: { children?: ReactNode }) => (
-    <td className="border-b border-[var(--color-border)]/30 py-1.5 pr-3 align-top">
+    <td className="border border-[var(--color-border)] px-3 py-1.5 align-top">
       {children}
     </td>
   ),

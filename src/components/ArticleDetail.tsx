@@ -56,8 +56,8 @@ export function ArticleDetail({
         <div className="flex min-w-0 flex-col gap-4">
           {/* Topic box */}
           <div className={BOX}>
-            <div className="p-4 sm:p-6">
-              <nav className="mb-2 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
+            <div className="px-4 py-3 sm:px-6 sm:py-4">
+              <nav className="mb-1 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
                 <button
                   onClick={onBack}
                   className="hover:text-[var(--color-text)] hover:underline"
@@ -73,10 +73,10 @@ export function ArticleDetail({
               </nav>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h1 className="text-2xl font-bold sm:text-3xl">
+                  <h1 className="text-xl font-bold sm:text-2xl">
                     {post.title}
                   </h1>
-                  <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
                     <span>{post.date}</span>
                     {(post.tags ?? []).map((tag) => (
                       <span
@@ -92,7 +92,7 @@ export function ArticleDetail({
                   <img
                     src={post.image}
                     alt=""
-                    className="hidden h-20 w-20 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
+                    className="hidden h-14 w-14 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
                   />
                 )}
               </div>

@@ -58,8 +58,8 @@ export function ArticleDetail({
         <div className="flex min-w-0 flex-col gap-4">
           {/* Topic box */}
           <div className={BOX}>
-            <div className="px-4 py-2.5 sm:px-6 sm:py-3">
-              <nav className="mb-0.5 flex items-center gap-1.5 text-xs text-[var(--color-muted)]">
+            <div className="px-4 py-1.5 sm:px-6 sm:py-2">
+              <nav className="flex items-center gap-1.5 text-xs text-[var(--color-muted)]">
                 <button
                   onClick={onBack}
                   className="hover:text-[var(--color-text)] hover:underline"
@@ -76,14 +76,14 @@ export function ArticleDetail({
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <h1 className="text-lg font-bold sm:text-xl">{post.title}</h1>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
                     <span>{post.date}</span>
                     {(post.tags ?? []).map((tag) => (
                       <button
                         key={tag}
                         onClick={() => onOpenTag(tag)}
                         title={`${t('articles')} › ${tag}`}
-                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5 hover:border-[var(--color-accent)] hover:text-[var(--color-text)]"
+                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px leading-tight hover:border-[var(--color-accent)] hover:text-[var(--color-text)]"
                       >
                         {tag}
                       </button>

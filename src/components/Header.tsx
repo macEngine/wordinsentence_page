@@ -1,7 +1,7 @@
 import type { Activity } from '../types';
 import { useLocale } from '../hooks/useLocale';
 
-type Page = 'home' | 'articles' | 'tracks' | 'summary';
+type Page = 'home' | 'articles' | 'tag' | 'tracks' | 'summary';
 
 interface HeaderProps {
   dark: boolean;

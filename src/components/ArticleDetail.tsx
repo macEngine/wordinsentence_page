@@ -9,6 +9,7 @@ interface ArticleDetailProps {
   posts: WordPost[];
   onBack: () => void;
   onOpen: (post: WordPost) => void;
+  onOpenTag: (tag: string) => void;
 }
 
 const BOX =
@@ -38,6 +39,7 @@ export function ArticleDetail({
   posts,
   onBack,
   onOpen,
+  onOpenTag,
 }: ArticleDetailProps) {
   const { t, locale } = useLocale();
   const idx = posts.indexOf(post);
@@ -56,8 +58,8 @@ export function ArticleDetail({
         <div className="flex min-w-0 flex-col gap-4">
           {/* Topic box */}
           <div className={BOX}>
-            <div className="px-4 py-3 sm:px-6 sm:py-4">
-              <nav className="mb-1 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
+            <div className="px-4 py-2.5 sm:px-6 sm:py-3">
+              <nav className="mb-0.5 flex items-center gap-1.5 text-xs text-[var(--color-muted)]">
                 <button
                   onClick={onBack}
                   className="hover:text-[var(--color-text)] hover:underline"
@@ -71,20 +73,20 @@ export function ArticleDetail({
                   </>
                 )}
               </nav>
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <h1 className="text-xl font-bold sm:text-2xl">
-                    {post.title}
-                  </h1>
-                  <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
+                  <h1 className="text-lg font-bold sm:text-xl">{post.title}</h1>
+                  <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--color-muted)]">
                     <span>{post.date}</span>
                     {(post.tags ?? []).map((tag) => (
-                      <span
+                      <button
                         key={tag}
-                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5"
+                        onClick={() => onOpenTag(tag)}
+                        title={`${t('articles')} › ${tag}`}
+                        className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-0.5 hover:border-[var(--color-accent)] hover:text-[var(--color-text)]"
                       >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                   </p>
                 </div>
@@ -92,7 +94,7 @@ export function ArticleDetail({
                   <img
                     src={post.image}
                     alt=""
-                    className="hidden h-14 w-14 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
+                    className="hidden h-12 w-12 shrink-0 rounded-lg border border-[var(--color-border)] object-cover sm:block"
                   />
                 )}
               </div>

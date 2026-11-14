@@ -44,6 +44,11 @@ const ArticleDetail = lazy(() =>
     default: module.ArticleDetail,
   }))
 );
+const TagPage = lazy(() =>
+  import('@/components/TagPage').then((module) => ({
+    default: module.TagPage,
+  }))
+);
 const ArticlesPage = lazy(() =>
   import('@/components/ArticlesPage').then((module) => ({
     default: module.ArticlesPage,
@@ -55,11 +60,11 @@ const SummaryPage = lazy(() =>
   }))
 );
 
-type Page = 'home' | 'articles' | 'tracks' | 'summary';
-const PAGES: Page[] = ['home', 'articles', 'tracks', 'summary'];
+type Page = 'home' | 'articles' | 'tag' | 'tracks' | 'summary';
+const PAGES: Page[] = ['home', 'articles', 'tag', 'tracks', 'summary'];
 interface Route {
   page: Page;
-  /** `articles/<slug>` opens one article. */
+  /** `articles/<slug>` opens one article; `tag/<tag>` lists posts with that tag. */
   slug: string | null;
 }
 const routeFromPath = (pathname: string): Route => {
@@ -68,11 +73,14 @@ const routeFromPath = (pathname: string): Route => {
     .replace(/\/$/, '');
   const [head, ...rest] = path.split('/');
   const page = PAGES.find((p) => p === head) ?? 'home';
-  const slug = page === 'articles' && rest.length ? rest.join('/') : null;
+  const slug =
+    (page === 'articles' || page === 'tag') && rest.length
+      ? decodeURIComponent(rest.join('/'))
+      : null;
   return { page, slug };
 };
 const routeToPath = ({ page, slug }: Route): string =>
-  `${import.meta.env.BASE_URL}${page === 'home' ? '' : page}${slug ? `/${slug}` : ''}`;
+  `${import.meta.env.BASE_URL}${page === 'home' ? '' : page}${slug ? `/${encodeURIComponent(slug)}` : ''}`;
 /** public/404.html stores the deep-linked path (GitHub Pages) before bouncing to index. */
 const initialRoute = (): Route => {
   const redirect = sessionStorage.getItem('redirect');
@@ -111,6 +119,7 @@ function Dashboard() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
   const openPost = (post: WordPost) => navigate('articles', postSlug(post));
+  const openTag = (tag: string) => navigate('tag', tag);
   const article = route.slug ? findBySlug(words, route.slug) : undefined;
 
   const selectProvince = useCallback((province: string | null) => {
@@ -187,8 +196,16 @@ function Dashboard() {
             posts={sortedWords}
             onBack={() => navigate('articles')}
             onOpen={openPost}
+            onOpenTag={openTag}
           />
-        ) : page === 'articles' ? (
+        ) : page === 'tag' && route.slug ? (
+          <TagPage
+            tag={route.slug}
+            posts={words}
+            onBack={() => navigate('articles')}
+            onOpen={openPost}
+          />
+        ) : page === 'articles' || page === 'tag' ? (
           <ArticlesPage
             posts={words}
             onBack={() => navigate('home')}

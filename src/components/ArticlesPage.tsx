@@ -13,10 +13,9 @@ import {
 } from '../core/articles';
 import { sortWordsByDate } from '../core/words';
 import { collectWordIndex, type LexiconEntry } from '../core/lexicon';
-import { HOME_SIDEBAR } from '../core/siteSidebar';
 import { PostList } from './PostList';
-import { PostMarkdown } from './PostMarkdown';
-import { BOX, SideCard } from './SideCard';
+import { BOX } from './SideCard';
+import { SiteSidebar } from './SiteSidebar';
 
 interface ArticlesPageProps {
   posts: WordPost[];
@@ -43,7 +42,7 @@ export function ArticlesPage({
   onOpen,
   onOpenWords,
 }: ArticlesPageProps) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const wordCount = useMemo(
     () => collectWordIndex(posts, lexicon).length,
     [posts, lexicon]
@@ -68,8 +67,8 @@ export function ArticlesPage({
 
   return (
     <div className="mx-auto max-w-[1140px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_340px]">
-        <div className={BOX}>
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className={`min-w-0 ${BOX}`}>
           {/* Tab bar: years left, sources right */}
           <div className="flex flex-wrap items-center gap-1.5 border-b border-[var(--color-border)] px-4 py-3">
             <button
@@ -169,32 +168,11 @@ export function ArticlesPage({
         </div>
 
         {/* Sidebar: right column on desktop, below the list on phones */}
-        <div className="flex flex-col gap-4 lg:sticky lg:top-[var(--header-offset)]">
-          {HOME_SIDEBAR.map((card) => (
-            <SideCard
-              key={card.zh}
-              title={locale === 'zh' ? card.zh : (card.en ?? card.zh)}
-            >
-              <PostMarkdown compact>{card.markdown}</PostMarkdown>
-            </SideCard>
-          ))}
-          <SideCard title={t('stats')}>
-            <dl className="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <dt className="text-xs text-[var(--color-muted)]">
-                  {t('articles')}
-                </dt>
-                <dd className="font-mono text-lg font-bold">{posts.length}</dd>
-              </div>
-              <button onClick={onOpenWords} className="text-left">
-                <dt className="text-xs text-[var(--color-muted)] underline-offset-2 hover:underline">
-                  {t('words')}
-                </dt>
-                <dd className="font-mono text-lg font-bold">{wordCount}</dd>
-              </button>
-            </dl>
-          </SideCard>
-        </div>
+        <SiteSidebar
+          articleCount={posts.length}
+          wordCount={wordCount}
+          onOpenWords={onOpenWords}
+        />
       </div>
     </div>
   );

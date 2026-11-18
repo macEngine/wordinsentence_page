@@ -11,6 +11,9 @@ import {
   hookItems,
   isWordTag,
   parseLexiconEntry,
+  phraseExamples,
+  phraseItems,
+  phraseRegex,
   plainText,
   searchWordIndex,
   senseItems,
@@ -182,4 +185,22 @@ test('senseItems splits the bold label from the detail', () => {
   assert.match(items[0].detail ?? '', /^（对比、现实、数据/);
   assert.match(items[0].detail ?? '', /a stark contrast/);
   assert.equal(items.length, 4);
+});
+
+test('phraseItems and phraseExamples link phrases to the sentences using them', () => {
+  const items = phraseItems(deluge);
+  assert.equal(items[0].phrase, 'a deluge of');
+  assert.equal(items[0].meaning, '… 大量涌来的……');
+  const posts = [
+    { sentence: 'The office **was deluged** with calls.' },
+    { sentence: 'It stands in stark contrast to last year.' },
+    { sentence: 'An office often has calls.' },
+  ] as Parameters<typeof phraseExamples>[0];
+  assert.equal(phraseExamples(posts, 'be deluged with …').length, 1);
+  assert.equal(phraseExamples(posts, 'in stark contrast to …').length, 1);
+  // short words match exactly: "a … of" must not hit "an … often"
+  assert.equal(phraseExamples(posts, 'a deluge of …').length, 0);
+  // alternatives share the head: "the stark reality / truth"
+  assert.match('the stark truth', phraseRegex('the stark reality / truth')!);
+  assert.equal(phraseRegex('…'), null);
 });

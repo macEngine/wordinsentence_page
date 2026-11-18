@@ -9,6 +9,8 @@ import {
   hookItems,
   senseItems,
   isWordTag,
+  phraseExamples,
+  phraseItems,
   type LexiconEntry,
 } from '../core/lexicon';
 import { highlightWord, sortWordsByDate } from '../core/words';
@@ -108,6 +110,15 @@ export function WordPage({
   );
   const hooks = entry ? hookItems(entry) : [];
   const senses = entry ? senseItems(entry) : [];
+  // Each phrase with the posts whose sentence uses it (linked in the card).
+  const phrases = useMemo(
+    () =>
+      (entry ? phraseItems(entry) : []).map((ph) => ({
+        ...ph,
+        used: phraseExamples(posts, ph.phrase),
+      })),
+    [entry, posts]
+  );
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
@@ -232,9 +243,30 @@ export function WordPage({
               </ul>
             </div>
           )}
-          {entry?.phrases && (
+          {phrases.length > 0 && (
             <SideCard title={t('phrases')}>
-              <PostMarkdown>{entry.phrases}</PostMarkdown>
+              <ul className="list-disc space-y-1.5 pl-4 text-sm leading-relaxed">
+                {phrases.map((ph) => (
+                  <li key={ph.phrase}>
+                    {ph.used.length > 0 ? (
+                      <button
+                        onClick={() => onOpen(ph.used[0])}
+                        title={`${ph.used.length} ${t('examplesCount')} · ${ph.used[0].word} ${ph.used[0].date}`}
+                        className="font-semibold text-[var(--color-accent)] underline decoration-dotted underline-offset-2 hover:decoration-solid"
+                      >
+                        {ph.phrase}
+                      </button>
+                    ) : (
+                      <span className="font-semibold">{ph.phrase}</span>
+                    )}
+                    {ph.meaning && (
+                      <span className="ml-1.5 text-[var(--color-muted)]">
+                        {ph.meaning}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </SideCard>
           )}
           {otherForms.length > 0 && (

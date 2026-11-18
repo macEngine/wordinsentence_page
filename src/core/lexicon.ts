@@ -431,3 +431,79 @@ export function formsWithExamples(
     }))
     .filter((f) => f.count > 0);
 }
+
+export interface PhraseItem {
+  /** The phrase as written, e.g. "in stark contrast to …". */
+  phrase: string;
+  /** Meaning after the bold run, plain text. */
+  meaning?: string;
+}
+
+/** `## 短语` bullets: `- **phrase** meaning` -> { phrase, meaning }. */
+export function phraseItems(entry: LexiconEntry): PhraseItem[] {
+  return (entry.phrases ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => {
+      const body = l.replace(/^[-*]\s+/, '');
+      const m = body.match(/^\*\*(.+?)\*\*\s*(.*)$/s);
+      if (!m) return { phrase: plainText(body) };
+      const meaning = plainText(m[2]).trim();
+      return { phrase: m[1].trim(), meaning: meaning || undefined };
+    });
+}
+
+const escapeRe = (w: string) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const BE_FORMS = '(?:be|is|are|was|were|been|being|am)';
+const PLACEHOLDERS = new Set([
+  'sth',
+  'sb',
+  'something',
+  'somebody',
+  'someone',
+  'one',
+]);
+
+/**
+ * Regex for "does this sentence use the phrase": words of 4+ letters match
+ * by stem (deluge -> deluged), short words exactly, `be` matches any form, …/sth/sb placeholders are
+ * skipped, and ` / ` separates alternatives ("the stark reality / truth").
+ */
+export function phraseRegex(phrase: string): RegExp | null {
+  const alternatives = phrase
+    .split(/\s*\/\s*/)
+    .map((alt) =>
+      alt
+        .toLowerCase()
+        .replace(/[….]+/g, ' ')
+        .split(/[^a-z'-]+/)
+        .filter((w) => w.length > 0 && !PLACEHOLDERS.has(w))
+    )
+    .filter((words) => words.length > 0);
+  if (!alternatives.length) return null;
+  // "the stark reality / truth": the tail alternative reuses the head words
+  const head = alternatives[0];
+  const patterns = alternatives.map((words, i) => {
+    const full =
+      i === 0 || words.length > 1 ? words : [...head.slice(0, -1), ...words];
+    return full
+      .map(
+        (w) =>
+          w === 'be'
+            ? `\\b${BE_FORMS}\\b`
+            : w.length <= 3
+              ? `\\b${escapeRe(w)}\\b` // a / of / to: exact, no stem
+              : `\\b${escapeRe(w)}\\w*` // deluge -> deluged, deluges
+      )
+      .join('\\W+');
+  });
+  return new RegExp(patterns.join('|'), 'i');
+}
+
+/** Posts whose quoted sentence uses the phrase. */
+export function phraseExamples(posts: WordPost[], phrase: string): WordPost[] {
+  const re = phraseRegex(phrase);
+  if (!re) return [];
+  return posts.filter((p) => re.test(p.sentence.replace(/\*\*/g, '')));
+}

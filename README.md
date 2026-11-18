@@ -1,5 +1,8 @@
 ## Note
 
+> 内容怎么写（文章 / 词条 / 侧边栏的全部约定）：见 [CONTENT.md](./CONTENT.md)。
+
+
 1. clone or Fork before vercel 404 need to pull the latest code
 2. python in README means python3 python
 3. use v2.0 need change vercel setting from gatsby to vite

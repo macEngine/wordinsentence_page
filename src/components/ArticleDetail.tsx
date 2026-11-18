@@ -34,8 +34,8 @@ export function ArticleDetail({
   );
 
   return (
-    <div className="mx-auto max-w-[1140px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* Main column */}
         <div className="flex min-w-0 flex-col gap-4">
           {/* Topic box */}

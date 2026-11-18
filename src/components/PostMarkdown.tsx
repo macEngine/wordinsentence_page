@@ -18,38 +18,71 @@ function resolveSrc(src?: string): string | undefined {
  * line-height 1.8, a hair of letter-spacing, a blank-line-sized gap between
  * paragraphs. Quotes get a plain gray bar instead of a tinted box.
  */
-const BODY = 'text-[17px] leading-[1.8] tracking-[0.02em]';
+interface Sizes {
+  /** paragraph / list / quote text */
+  body: string;
+  /** vertical gap between blocks */
+  gap: string;
+  h2: string;
+  table: string;
+  thead: string;
+  code: string;
+}
 
-const markdownComponents = {
+/** Article body: the WeChat reader sizes. */
+const ARTICLE: Sizes = {
+  body: 'text-[17px] leading-[1.8] tracking-[0.02em]',
+  gap: 'my-5',
+  h2: 'mt-9 mb-3 text-[19px] leading-snug',
+  table: 'text-[15px] leading-relaxed',
+  thead: 'text-sm',
+  code: 'text-sm',
+};
+
+/** Sidebar cards and other narrow boxes: the site's regular small text. */
+const COMPACT: Sizes = {
+  body: 'text-sm leading-relaxed',
+  gap: 'my-2',
+  h2: 'mt-4 mb-1.5 text-base',
+  table: 'text-sm',
+  thead: 'text-xs',
+  code: 'text-xs',
+};
+
+const buildComponents = (z: Sizes) => ({
   h2: ({ children }: { children?: ReactNode }) => (
-    <h3 className="mt-9 mb-3 text-[19px] leading-snug font-bold first:mt-0">
-      {children}
-    </h3>
+    <h3 className={`${z.h2} font-bold first:mt-0`}>{children}</h3>
   ),
   h3: ({ children }: { children?: ReactNode }) => (
-    <h4 className={`mt-6 mb-2 ${BODY} font-bold`}>{children}</h4>
+    <h4 className={`mt-6 mb-2 ${z.body} font-bold`}>{children}</h4>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className={`my-5 ${BODY}`}>{children}</p>
+    <p className={`${z.gap} ${z.body}`}>{children}</p>
   ),
   strong: ({ children }: { children?: ReactNode }) => (
     <strong className="font-bold text-[var(--color-text)]">{children}</strong>
   ),
   blockquote: ({ children }: { children?: ReactNode }) => (
     <blockquote
-      className={`my-5 border-l-4 border-[var(--color-border)] pl-5 ${BODY} [&>p]:my-3 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0`}
+      className={`${z.gap} border-l-4 border-[var(--color-border)] pl-5 ${z.body} [&>p]:my-3 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0`}
     >
       {children}
     </blockquote>
   ),
   ul: ({ children }: { children?: ReactNode }) => (
-    <ul className={`my-5 list-disc space-y-2 pl-7 ${BODY}`}>{children}</ul>
+    <ul className={`${z.gap} list-disc space-y-2 pl-7 ${z.body}`}>
+      {children}
+    </ul>
   ),
   ol: ({ children }: { children?: ReactNode }) => (
-    <ol className={`my-5 list-decimal space-y-2 pl-7 ${BODY}`}>{children}</ol>
+    <ol className={`${z.gap} list-decimal space-y-2 pl-7 ${z.body}`}>
+      {children}
+    </ol>
   ),
   code: ({ children }: { children?: ReactNode }) => (
-    <code className="rounded-full border border-[var(--color-border)] px-2 py-0.5 font-sans text-sm text-[var(--color-muted)]">
+    <code
+      className={`rounded-full border border-[var(--color-border)] px-2 py-0.5 font-sans ${z.code} text-[var(--color-muted)]`}
+    >
       {children}
     </code>
   ),
@@ -68,18 +101,22 @@ const markdownComponents = {
       src={resolveSrc(src)}
       alt={alt ?? ''}
       loading="lazy"
-      className="my-5 max-h-80 rounded-lg border border-[var(--color-border)]"
+      className={`${z.gap} max-h-80 rounded-lg border border-[var(--color-border)]`}
     />
   ),
   table: ({ children }: { children?: ReactNode }) => (
-    <div className="my-5 overflow-x-auto">
-      <table className="w-full border-collapse border border-[var(--color-border)] text-[15px] leading-relaxed">
+    <div className={`${z.gap} overflow-x-auto`}>
+      <table
+        className={`w-full border-collapse border border-[var(--color-border)] ${z.table}`}
+      >
         {children}
       </table>
     </div>
   ),
   thead: ({ children }: { children?: ReactNode }) => (
-    <thead className="bg-[var(--color-bg)] text-left text-sm text-[var(--color-muted)]">
+    <thead
+      className={`bg-[var(--color-bg)] text-left ${z.thead} text-[var(--color-muted)]`}
+    >
       {children}
     </thead>
   ),
@@ -93,7 +130,10 @@ const markdownComponents = {
       {children}
     </td>
   ),
-};
+});
+
+const ARTICLE_COMPONENTS = buildComponents(ARTICLE);
+const COMPACT_COMPONENTS = buildComponents(COMPACT);
 
 /**
  * The posts write `**解析：**` and start the text on the next line; markdown
@@ -107,10 +147,23 @@ function labelOnOwnLine(markdown: string): string {
   );
 }
 
-/** Renders a post's markdown (GFM tables included) with the site's styling. */
-export function PostMarkdown({ children }: { children: string }) {
+/**
+ * Renders a post's markdown (GFM tables included) with the site's styling.
+ * `compact` uses the regular small text for sidebar cards; the default is the
+ * article reading size.
+ */
+export function PostMarkdown({
+  children,
+  compact = false,
+}: {
+  children: string;
+  compact?: boolean;
+}) {
   return (
-    <Markdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      components={compact ? COMPACT_COMPONENTS : ARTICLE_COMPONENTS}
+    >
       {labelOnOwnLine(children)}
     </Markdown>
   );

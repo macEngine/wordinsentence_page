@@ -175,7 +175,7 @@ export function ArticlesPage({
               key={card.zh}
               title={locale === 'zh' ? card.zh : (card.en ?? card.zh)}
             >
-              <PostMarkdown>{card.markdown}</PostMarkdown>
+              <PostMarkdown compact>{card.markdown}</PostMarkdown>
             </SideCard>
           ))}
           <SideCard title={t('stats')}>

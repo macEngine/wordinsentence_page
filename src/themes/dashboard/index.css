@@ -47,7 +47,9 @@ body {
   cursor: default;
 }
 .dashboard
-  button:not(.heatmap-day):not(.calendar-day):not(.track-thumb):not(.tag-chip) {
+  button:not(.heatmap-day):not(.calendar-day):not(.track-thumb):not(
+    .tag-chip
+  ):not(.plain-btn) {
   min-height: 32px;
 }
 .dashboard button:focus-visible,
@@ -108,7 +110,9 @@ body {
   }
 }
 .dashboard
-  button:not(.heatmap-day):not(.calendar-day):not(.track-thumb):not(.tag-chip) {
+  button:not(.heatmap-day):not(.calendar-day):not(.track-thumb):not(
+    .tag-chip
+  ):not(.plain-btn) {
   min-width: 32px;
 }
 

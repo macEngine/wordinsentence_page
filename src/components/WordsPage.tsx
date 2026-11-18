@@ -18,6 +18,8 @@ interface WordsPageProps {
 }
 
 const CELL = 'border border-[var(--color-border)] px-3 py-2 align-top';
+const HEAD =
+  'border border-[var(--color-border)] px-3 py-1.5 font-semibold whitespace-nowrap';
 const CHIP =
   'tag-chip rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px text-xs leading-tight text-[var(--color-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-text)]';
 
@@ -58,11 +60,11 @@ export function WordsPage({
     <th
       scope="col"
       aria-sort={key === sortKey ? (desc ? 'descending' : 'ascending') : 'none'}
-      className={`${CELL} font-semibold`}
+      className={HEAD}
     >
       <button
         onClick={() => sortBy(key)}
-        className="w-full text-left hover:text-[var(--color-accent)]"
+        className="plain-btn w-full text-left hover:text-[var(--color-accent)]"
       >
         {label}
         {arrow(key)}
@@ -74,7 +76,7 @@ export function WordsPage({
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
       <div className={`mx-auto max-w-[1100px] ${BOX}`}>
         {/* Title bar: name left, search right (Codeforces-style) */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-3 py-1.5">
           <h1 className="text-base font-bold">
             {t('words')}
             <span className="ml-2 text-xs font-normal text-[var(--color-muted)]">
@@ -89,19 +91,19 @@ export function WordsPage({
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('searchWords')}
             aria-label={t('searchWords')}
-            className="w-full rounded border border-[var(--color-border)] bg-transparent px-2.5 py-1 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none sm:w-72"
+            className="w-full rounded border border-[var(--color-border)] bg-transparent px-2 py-0.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none sm:w-72"
           />
         </div>
 
-        <div className="overflow-x-auto p-3">
-          <table className="w-full border-collapse text-sm">
+        <div className="overflow-x-auto rounded-b-xl">
+          <table className="w-full border-collapse text-sm [&_tbody>tr:last-child>td]:border-b-0 [&_thead_th]:border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
             <thead className="bg-[var(--color-bg)] text-left text-xs text-[var(--color-muted)]">
               <tr>
                 {sortable('word', t('word'))}
-                <th scope="col" className={`${CELL} font-semibold`}>
+                <th scope="col" className={HEAD}>
                   {t('sense')}
                 </th>
-                <th scope="col" className={`${CELL} font-semibold`}>
+                <th scope="col" className={HEAD}>
                   {t('tags')}
                 </th>
                 {sortable('examples', t('examples'))}
@@ -114,7 +116,7 @@ export function WordsPage({
                   <td className={CELL}>
                     <button
                       onClick={() => onOpenWord(item.word)}
-                      className="font-mono font-semibold text-[var(--color-accent)] hover:underline"
+                      className="plain-btn font-mono font-semibold text-[var(--color-accent)] hover:underline"
                     >
                       {item.word}
                     </button>

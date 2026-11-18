@@ -74,9 +74,11 @@ export function WordsPage({
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className={`mx-auto max-w-[1100px] ${BOX}`}>
+      <div
+        className={`mx-auto max-w-[1100px] ${BOX} shadow-[1px_1px_4px_rgba(0,0,0,0.22)]`}
+      >
         {/* Title bar: name left, search right (Codeforces-style) */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-3 py-1.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-t-xl border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-border)_45%,var(--color-card))] px-3 py-1.5">
           <h1 className="text-base font-bold">
             {t('words')}
             <span className="ml-2 text-xs font-normal text-[var(--color-muted)]">
@@ -97,7 +99,7 @@ export function WordsPage({
 
         <div className="overflow-x-auto rounded-b-xl">
           <table className="w-full border-collapse text-sm [&_tbody>tr:last-child>td]:border-b-0 [&_thead_th]:border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
-            <thead className="bg-[var(--color-bg)] text-left text-xs text-[var(--color-muted)]">
+            <thead className="text-left text-xs text-[var(--color-muted)]">
               <tr>
                 {sortable('word', t('word'))}
                 <th scope="col" className={HEAD}>
@@ -112,7 +114,10 @@ export function WordsPage({
             </thead>
             <tbody>
               {shown.map((item) => (
-                <tr key={item.word} className="hover:bg-[var(--color-bg)]">
+                <tr
+                  key={item.word}
+                  className="odd:bg-[var(--color-bg)] hover:bg-[var(--color-accent)]/10"
+                >
                   <td className={CELL}>
                     <button
                       onClick={() => onOpenWord(item.word)}

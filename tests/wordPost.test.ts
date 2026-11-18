@@ -66,7 +66,7 @@ test('parseWordPost on a post without frontmatter (owner sample)', () => {
   );
   assert.equal(e.articleDate, '2026-07-07');
   assert.equal(e.source, '纽约时报');
-  assert.deepEqual(e.tags, ['托福', 'GRE']);
+  assert.deepEqual(e.tags, ['托福', 'GRE', 'wrangling', 'wrangle']);
   assert.equal(e.phoneticUk, '/ˈræŋɡlɪŋ/');
   assert.equal(e.phoneticUs, '/ˈræŋɡlɪŋ/');
   assert.equal(e.image, 'https://blogimg.niuge6.com/i/4421705295567.png');

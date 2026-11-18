@@ -3,7 +3,7 @@
 ![](https://blogimg.niuge6.com/i/4421705295567.png)
 
 **wrangling** 英 /ˈræŋɡlɪŋ/ 美 /ˈræŋɡlɪŋ/
-`托福` `GRE`
+`托福` `GRE` `wrangling` `wrangle`
 
 ## 📰 今日例句
 

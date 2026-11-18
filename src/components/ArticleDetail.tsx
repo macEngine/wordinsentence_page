@@ -34,7 +34,7 @@ export function ArticleDetail({
   );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
+    <div className="mx-auto max-w-[1140px] px-4 py-5 sm:px-6 sm:py-6">
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_340px]">
         {/* Main column */}
         <div className="flex min-w-0 flex-col gap-4">
@@ -83,7 +83,7 @@ export function ArticleDetail({
             </div>
 
             {/* The whole post; the divider runs edge to edge */}
-            <article className="border-t border-[var(--color-border)] px-4 py-4 sm:px-6 sm:py-5">
+            <article className="border-t border-[var(--color-border)] px-4 py-5 sm:px-8 sm:py-7">
               <PostMarkdown>{post.markdown}</PostMarkdown>
             </article>
           </div>

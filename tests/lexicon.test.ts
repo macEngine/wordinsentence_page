@@ -101,7 +101,8 @@ test('firstSense is the first 常用义 item as plain text', () => {
 test('word index rows carry forms, labels and a sense', () => {
   const index = collectWordIndex([starkPost, glaringPost], [stark]);
   const byWord = Object.fromEntries(index.map((i) => [i.word, i]));
-  assert.deepEqual(byWord.stark.forms, ['starkly', 'starkness']);
+  // starkly / starkness never appear in a post -> not listed
+  assert.deepEqual(byWord.stark.forms, []);
   assert.deepEqual(byWord.glaring.forms, ['glare']);
   assert.deepEqual(byWord.glaring.tags, ['六级', '考研', '托福']);
   assert.ok(byWord.glaring.sense && byWord.glaring.sense.length > 0);

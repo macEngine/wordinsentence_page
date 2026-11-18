@@ -133,7 +133,7 @@ export function examplesForWord(
 export interface WordIndexItem {
   /** Canonical word (lexicon word, else the post headword). */
   word: string;
-  /** Other spellings (lexicon forms, or word tags on the posts), canonical excluded. */
+  /** Other spellings actually seen in posts (headwords or word tags), canonical excluded. */
   forms: string[];
   /** Has a hand-written lexicon page. */
   hasEntry: boolean;
@@ -289,7 +289,7 @@ export function collectWordIndex(
   for (const e of entries) {
     items.set(e.word, {
       word: e.word,
-      forms: e.forms.filter((f) => f !== e.word),
+      forms: [], // filled from posts below: only forms actually seen
       hasEntry: true,
       sense: firstSense(e),
       senses: senseList(e),
@@ -314,8 +314,7 @@ export function collectWordIndex(
     const tags = p.tags ?? [];
     add(
       item.forms,
-      tags
-        .filter(isWordTag)
+      [p.word, ...tags.filter(isWordTag)]
         .map(normalizeWord)
         .filter((w) => w !== canonical)
     );

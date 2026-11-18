@@ -13,10 +13,11 @@ interface HeaderProps {
 
 export function Header({ dark, toggleTheme, page, onNavigate }: HeaderProps) {
   const { locale, setLocale, t } = useLocale();
+  // Articles and tag pages live under Home now that the list is the home page.
+  const active: Page = page === 'articles' || page === 'tag' ? 'home' : page;
 
   const navItems: { label: string; page: Page }[] = [
     { label: t('home'), page: 'home' },
-    { label: t('articles'), page: 'articles' },
     { label: t('words'), page: 'word' },
     { label: t('tracks'), page: 'tracks' },
     { label: t('summary'), page: 'summary' },
@@ -41,12 +42,12 @@ export function Header({ dark, toggleTheme, page, onNavigate }: HeaderProps) {
         <div className="flex flex-wrap items-center gap-3 sm:gap-6">
           {navItems.map((item) => (
             <button
-              aria-current={item.page === page ? 'page' : undefined}
+              aria-current={item.page === active ? 'page' : undefined}
               type="button"
               key={item.page}
               onClick={() => onNavigate(item.page)}
               className={`cursor-pointer border-0 bg-transparent p-0 text-sm transition-colors ${
-                item.page === page
+                item.page === active
                   ? 'font-medium text-[var(--color-accent)]'
                   : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
               }`}

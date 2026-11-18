@@ -2,6 +2,12 @@ import { type ReactNode } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+/** `wechat-qr.png` -> `<base>/wechat-qr.png`; absolute and http(s) URLs pass through. */
+function resolveSrc(src?: string): string | undefined {
+  if (!src || /^(https?:)?\/\//.test(src) || src.startsWith('/')) return src;
+  return `${import.meta.env.BASE_URL}${src}`;
+}
+
 /**
  * Element styles for the rendered post. Tailwind v4 has no typography plugin
  * in this project, so each element is mapped explicitly; the markdown is our
@@ -50,7 +56,7 @@ const markdownComponents = {
   ),
   img: ({ src, alt }: { src?: string; alt?: string }) => (
     <img
-      src={src}
+      src={resolveSrc(src)}
       alt={alt ?? ''}
       loading="lazy"
       className="my-3 max-h-80 rounded-lg border border-[var(--color-border)]"

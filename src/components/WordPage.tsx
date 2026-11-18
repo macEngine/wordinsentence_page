@@ -9,6 +9,7 @@ import {
 } from '../core/lexicon';
 import { highlightWord, sortWordsByDate } from '../core/words';
 import { PostMarkdown } from './PostMarkdown';
+import { BOX, SideCard } from './SideCard';
 
 interface WordPageProps {
   word: string;
@@ -20,24 +21,8 @@ interface WordPageProps {
   onOpenWord: (word: string) => void;
 }
 
-const BOX =
-  'rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]';
 const CHIP =
   'tag-chip rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px leading-tight hover:border-[var(--color-accent)] hover:text-[var(--color-text)]';
-
-function SideCard({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div className={BOX}>
-      <h2 className="border-b border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold">
-        <span aria-hidden className="mr-1.5 text-[var(--color-accent)]">
-          →
-        </span>
-        {title}
-      </h2>
-      <div className="px-3 py-2.5">{children}</div>
-    </div>
-  );
-}
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <h2 className="mb-2 text-base font-bold">{children}</h2>;

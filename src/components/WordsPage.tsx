@@ -1,74 +1,179 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
-import { collectWordIndex, type LexiconEntry } from '../core/lexicon';
+import {
+  collectWordIndex,
+  searchWordIndex,
+  sortWordIndex,
+  type LexiconEntry,
+  type WordSortKey,
+} from '../core/lexicon';
+import { BOX } from './SideCard';
 
 interface WordsPageProps {
   posts: WordPost[];
   lexicon: LexiconEntry[];
-  onBack: () => void;
   onOpenWord: (word: string) => void;
+  onOpenTag: (tag: string) => void;
 }
 
-/** /word: every word the site knows, newest example first; ● marks a hand-written entry. */
+const CELL = 'border border-[var(--color-border)] px-3 py-2 align-top';
+const CHIP =
+  'tag-chip rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1.5 py-px text-xs leading-tight text-[var(--color-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-text)]';
+
+/**
+ * /word: every word the site knows, as a data table — bordered cells, a
+ * search box in the title bar, sortable columns (word / examples / latest).
+ * ● after a word marks a hand-written entry.
+ */
 export function WordsPage({
   posts,
   lexicon,
-  onBack,
   onOpenWord,
+  onOpenTag,
 }: WordsPageProps) {
   const { t } = useLocale();
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState<WordSortKey>('latest');
+  const [desc, setDesc] = useState(true);
+
   const items = useMemo(
     () => collectWordIndex(posts, lexicon),
     [posts, lexicon]
   );
+  const shown = useMemo(
+    () => sortWordIndex(searchWordIndex(items, query), sortKey, desc),
+    [items, query, sortKey, desc]
+  );
+  const sortBy = (key: WordSortKey) => {
+    if (key === sortKey) setDesc((d) => !d);
+    else {
+      setSortKey(key);
+      setDesc(key !== 'word');
+    }
+  };
+  const arrow = (key: WordSortKey) =>
+    key === sortKey ? (desc ? ' ↓' : ' ↑') : '';
+  const sortable = (key: WordSortKey, label: string) => (
+    <th
+      scope="col"
+      aria-sort={key === sortKey ? (desc ? 'descending' : 'ascending') : 'none'}
+      className={`${CELL} font-semibold`}
+    >
+      <button
+        onClick={() => sortBy(key)}
+        className="w-full text-left hover:text-[var(--color-accent)]"
+      >
+        {label}
+        {arrow(key)}
+      </button>
+    </th>
+  );
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="mx-auto max-w-[960px] rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
-        <nav className="flex items-center gap-1.5 border-b border-[var(--color-border)] px-4 py-2.5 text-sm">
-          <button
-            onClick={onBack}
-            className="text-[var(--color-muted)] hover:text-[var(--color-text)] hover:underline"
-          >
-            {t('home')}
-          </button>
-          <span aria-hidden className="text-[var(--color-muted)]">
-            ›
-          </span>
-          <span className="font-medium">{t('words')}</span>
-        </nav>
-        <ul className="divide-y divide-[var(--color-border)]">
-          {items.map((item) => (
-            <li key={item.word}>
-              <button
-                onClick={() => onOpenWord(item.word)}
-                className="flex w-full items-center justify-between gap-4 px-4 py-2.5 text-left hover:bg-[var(--color-bg)]"
-              >
-                <span className="flex items-center gap-2 font-mono text-sm font-medium">
-                  {item.word}
-                  {item.hasEntry && (
-                    <span
-                      title={t('wordEntry')}
-                      className="text-[10px] text-[var(--color-accent)]"
+      <div className={`mx-auto max-w-[1100px] ${BOX}`}>
+        {/* Title bar: name left, search right (Codeforces-style) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-2.5">
+          <h1 className="text-base font-bold">
+            {t('words')}
+            <span className="ml-2 text-xs font-normal text-[var(--color-muted)]">
+              {shown.length}
+              {shown.length !== items.length ? ` / ${items.length}` : ''}{' '}
+              {t('wordsCount')}
+            </span>
+          </h1>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('searchWords')}
+            aria-label={t('searchWords')}
+            className="w-full rounded border border-[var(--color-border)] bg-transparent px-2.5 py-1 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none sm:w-72"
+          />
+        </div>
+
+        <div className="overflow-x-auto p-3">
+          <table className="w-full border-collapse text-sm">
+            <thead className="bg-[var(--color-bg)] text-left text-xs text-[var(--color-muted)]">
+              <tr>
+                {sortable('word', t('word'))}
+                <th scope="col" className={`${CELL} font-semibold`}>
+                  {t('sense')}
+                </th>
+                <th scope="col" className={`${CELL} font-semibold`}>
+                  {t('tags')}
+                </th>
+                {sortable('examples', t('examples'))}
+                {sortable('latest', t('latest'))}
+              </tr>
+            </thead>
+            <tbody>
+              {shown.map((item) => (
+                <tr key={item.word} className="hover:bg-[var(--color-bg)]">
+                  <td className={CELL}>
+                    <button
+                      onClick={() => onOpenWord(item.word)}
+                      className="font-mono font-semibold text-[var(--color-accent)] hover:underline"
                     >
-                      ●
-                    </span>
-                  )}
-                </span>
-                <span className="flex items-center gap-3 text-xs text-[var(--color-muted)]">
-                  {item.latest && (
-                    <span className="font-mono">{item.latest}</span>
-                  )}
-                  <span className="rounded-full bg-[var(--color-bg)] px-2 py-0.5">
+                      {item.word}
+                    </button>
+                    {item.hasEntry && (
+                      <span
+                        title={t('wordEntry')}
+                        className="ml-1 text-[10px] text-[var(--color-accent)]"
+                      >
+                        ●
+                      </span>
+                    )}
+                    {item.forms.length > 0 && (
+                      <div className="mt-0.5 font-mono text-xs text-[var(--color-muted)]">
+                        {item.forms.join(' · ')}
+                      </div>
+                    )}
+                  </td>
+                  <td
+                    className={`${CELL} max-w-[26rem] text-[var(--color-text)]`}
+                  >
+                    {item.sense ?? (
+                      <span className="text-[var(--color-muted)]">—</span>
+                    )}
+                  </td>
+                  <td className={CELL}>
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => onOpenTag(tag)}
+                          className={CHIP}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                  <td className={`${CELL} text-center font-mono`}>
                     {item.examples}
-                  </span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="border-t border-[var(--color-border)] px-4 py-2.5 text-xs text-[var(--color-muted)]">
-          {items.length} {t('wordsCount')}
+                  </td>
+                  <td
+                    className={`${CELL} font-mono text-xs whitespace-nowrap text-[var(--color-muted)]`}
+                  >
+                    {item.latest ?? '—'}
+                  </td>
+                </tr>
+              ))}
+              {shown.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className={`${CELL} text-center text-[var(--color-muted)]`}
+                  >
+                    {t('noWords')}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

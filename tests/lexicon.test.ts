@@ -5,8 +5,12 @@ import {
   collectWordIndex,
   examplesForWord,
   findLexiconEntry,
+  firstSense,
   isWordTag,
   parseLexiconEntry,
+  plainText,
+  searchWordIndex,
+  sortWordIndex,
 } from '../src/core/lexicon.ts';
 import { parseWordPost } from '../src/core/wordPost.ts';
 
@@ -77,4 +81,37 @@ test('collectWordIndex merges lexicon entries and post headwords', () => {
   assert.equal(byWord.deluge.examples, 0);
   // words with examples sort before entry-only words
   assert.equal(index[index.length - 1].word, 'deluge');
+});
+
+test('firstSense is the first 常用义 item as plain text', () => {
+  assert.match(firstSense(stark) ?? '', /^adj\. 鲜明的、赤裸裸的/);
+  assert.doesNotMatch(firstSense(stark) ?? '', /\*\*/);
+  assert.equal(plainText('**a** `b` [c](http://x) *d*'), 'a b c d');
+});
+
+test('word index rows carry forms, labels and a sense', () => {
+  const index = collectWordIndex([starkPost, glaringPost], [stark]);
+  const byWord = Object.fromEntries(index.map((i) => [i.word, i]));
+  assert.deepEqual(byWord.stark.forms, ['starkly', 'starkness']);
+  assert.deepEqual(byWord.glaring.forms, ['glare']);
+  assert.deepEqual(byWord.glaring.tags, ['六级', '考研', '托福']);
+  assert.ok(byWord.glaring.sense && byWord.glaring.sense.length > 0);
+});
+
+test('searchWordIndex matches word, form, tag and sense; sort is stable', () => {
+  const index = collectWordIndex([starkPost, glaringPost], [stark, deluge]);
+  const words = (q: string) => searchWordIndex(index, q).map((i) => i.word);
+  assert.deepEqual(words('glare'), ['glaring']);
+  assert.deepEqual(words('史塔克'), ['stark']);
+  assert.deepEqual(words('gre'), ['deluge']);
+  assert.deepEqual(words('考研 glar'), ['glaring']);
+  assert.deepEqual(
+    words(''),
+    index.map((i) => i.word)
+  );
+  assert.deepEqual(
+    sortWordIndex(index, 'word', false).map((i) => i.word),
+    ['deluge', 'glaring', 'stark']
+  );
+  assert.equal(sortWordIndex(index, 'examples', true)[2].word, 'deluge');
 });

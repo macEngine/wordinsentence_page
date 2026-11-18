@@ -1,26 +1,10 @@
 import './index.css';
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import type { Activity } from '@/types';
-import {
-  useFilteredActivities,
-  getAvailableYears,
-  extractProvince,
-  getActivityData,
-} from '@/hooks/useActivities';
+import { getActivityData } from '@/hooks/useActivities';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocale } from '@/hooks/useLocale';
 import { Header } from '@/components/Header';
-import { StatsCards } from '@/components/StatsCards';
-import { ContributionHeatmap } from '@/components/ContributionHeatmap';
-import { WordList } from '@/components/WordList';
 import type { WordPost } from '@/core/wordPost';
 import { findBySlug, postSlug } from '@/core/articles';
 import { sortWordsByDate } from '@/core/words';
@@ -31,11 +15,6 @@ import { isWordTag, type LexiconEntry } from '@/core/lexicon';
 const words = wordsData as WordPost[];
 const sortedWords = sortWordsByDate(words);
 const lexicon = lexiconData as LexiconEntry[];
-import { RouteMap } from '@/components/RouteMap';
-import { CalendarWidget } from '@/components/CalendarWidget';
-import { ProfileCard } from '@/components/ProfileCard';
-import { PersonalBest } from '@/components/PersonalBest';
-import { ChinaMap } from '@/components/ChinaMap';
 
 const TracksPage = lazy(() =>
   import('@/components/TracksPage').then((module) => ({
@@ -107,16 +86,11 @@ const initialRoute = (): Route => {
 };
 
 function Dashboard() {
-  const routeSectionRef = useRef<HTMLDivElement>(null);
   const activities = getActivityData() as Activity[];
   const { dark, toggle } = useTheme();
   const { t } = useLocale();
   const [filter] = useState('all' as const);
   const [year, setYear] = useState<number | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
-    null
-  );
-  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [route, setRoute] = useState<Route>(initialRoute);
   const page = route.page;
 
@@ -138,46 +112,17 @@ function Dashboard() {
     isWordTag(tag) ? openWord(tag) : navigate('tag', tag);
   const article = route.slug ? findBySlug(words, route.slug) : undefined;
 
-  const selectProvince = useCallback((province: string | null) => {
-    setSelectedProvince(province);
-    setSelectedActivity(null);
-  }, []);
-
   const [currentYear] = useState(() => new Date().getFullYear());
-  const years = useMemo(() => getAvailableYears(activities), [activities]);
-  const filtered = useFilteredActivities(activities, filter, year);
-  const heatmapYear = year ?? years[0] ?? currentYear;
 
-  // Activities filtered to the selected province (for RouteMap)
-  const provinceFiltered = useMemo(() => {
-    if (!selectedProvince) return filtered;
-    return filtered.filter(
-      (a) => extractProvince(a.location_country) === selectedProvince
-    );
-  }, [filtered, selectedProvince]);
-
+  // Tracks / Summary still pick activities; keep the year in step with the pick.
   const selectActivity = useCallback(
     (activity: Activity | null) => {
-      setSelectedActivity(activity);
-      if (activity) {
-        setSelectedProvince(null);
-        if (window.matchMedia('(max-width: 1023px)').matches) {
-          requestAnimationFrame(() =>
-            routeSectionRef.current?.scrollIntoView({
-              block: 'start',
-              behavior: window.matchMedia('(prefers-reduced-motion: reduce)')
-                .matches
-                ? 'instant'
-                : 'smooth',
-            })
-          );
-        }
-        if (
-          year !== null &&
-          new Date(activity.start_date_local).getFullYear() !== year
-        ) {
-          setYear(new Date(activity.start_date_local).getFullYear());
-        }
+      if (
+        activity &&
+        year !== null &&
+        new Date(activity.start_date_local).getFullYear() !== year
+      ) {
+        setYear(new Date(activity.start_date_local).getFullYear());
       }
     },
     [year]
@@ -210,7 +155,7 @@ function Dashboard() {
           <ArticleDetail
             post={article}
             posts={sortedWords}
-            onBack={() => navigate('articles')}
+            onBack={() => navigate('home')}
             onOpen={openPost}
             onOpenTag={openTag}
           />
@@ -218,7 +163,7 @@ function Dashboard() {
           <TagPage
             tag={route.slug}
             posts={words}
-            onBack={() => navigate('articles')}
+            onBack={() => navigate('home')}
             onOpen={openPost}
           />
         ) : page === 'word' && route.slug ? (
@@ -235,14 +180,15 @@ function Dashboard() {
           <WordsPage
             posts={words}
             lexicon={lexicon}
-            onBack={() => navigate('home')}
             onOpenWord={openWord}
+            onOpenTag={openTag}
           />
         ) : page === 'articles' || page === 'tag' ? (
           <ArticlesPage
             posts={words}
-            onBack={() => navigate('home')}
+            lexicon={lexicon}
             onOpen={openPost}
+            onOpenWords={() => navigate('word')}
           />
         ) : page === 'summary' ? (
           <SummaryPage
@@ -265,57 +211,12 @@ function Dashboard() {
             }}
           />
         ) : (
-          <main className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-            <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_380px]">
-              {/* Left column */}
-              <div className="min-w-0 space-y-6 overflow-hidden">
-                <StatsCards
-                  activities={filtered}
-                  allActivities={activities}
-                  year={year}
-                  filter={filter}
-                  onSelectActivity={selectActivity}
-                />
-                <ContributionHeatmap
-                  activities={activities}
-                  year={heatmapYear}
-                  filter={filter}
-                  onSelectActivity={selectActivity}
-                />
-                <WordList words={words} onOpen={openPost} />
-              </div>
-
-              {/* Right column */}
-              <div className="flex min-w-0 flex-col gap-6 overflow-hidden">
-                <ProfileCard activities={activities} filter={filter} />
-                <ChinaMap
-                  activities={filtered}
-                  filter={filter}
-                  selectedProvince={selectedProvince}
-                  onSelectProvince={selectProvince}
-                />
-                <div ref={routeSectionRef} className="scroll-mt-28">
-                  <RouteMap
-                    activities={provinceFiltered}
-                    allActivities={activities}
-                    selectedActivity={selectedActivity}
-                    dark={dark}
-                    onClearSelection={() => setSelectedActivity(null)}
-                  />
-                </div>
-                <PersonalBest
-                  activities={activities}
-                  onSelectActivity={selectActivity}
-                />
-                <CalendarWidget
-                  key={year ?? 'all'}
-                  selectedActivity={selectedActivity}
-                  activities={filtered}
-                  onSelectActivity={selectActivity}
-                />
-              </div>
-            </div>
-          </main>
+          <ArticlesPage
+            posts={words}
+            lexicon={lexicon}
+            onOpen={openPost}
+            onOpenWords={() => navigate('word')}
+          />
         )}
       </Suspense>
 

@@ -131,8 +131,8 @@ export function ArticleDetail({
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="order-first flex flex-col gap-4 lg:sticky lg:top-[var(--header-offset)] lg:order-none">
+        {/* Sidebar: right column on desktop, below the article on phones */}
+        <div className="flex flex-col gap-4 lg:sticky lg:top-[var(--header-offset)]">
           <SideCard title={t('date')}>
             <p className="font-mono text-base font-bold">{dateLabel}</p>
           </SideCard>

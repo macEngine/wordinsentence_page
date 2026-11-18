@@ -1,7 +1,7 @@
 import type { Activity } from '../types';
 import { useLocale } from '../hooks/useLocale';
 
-type Page = 'home' | 'articles' | 'tag' | 'tracks' | 'summary';
+type Page = 'home' | 'articles' | 'tag' | 'word' | 'tracks' | 'summary';
 
 interface HeaderProps {
   dark: boolean;
@@ -17,6 +17,7 @@ export function Header({ dark, toggleTheme, page, onNavigate }: HeaderProps) {
   const navItems: { label: string; page: Page }[] = [
     { label: t('home'), page: 'home' },
     { label: t('articles'), page: 'articles' },
+    { label: t('words'), page: 'word' },
     { label: t('tracks'), page: 'tracks' },
     { label: t('summary'), page: 'summary' },
   ];

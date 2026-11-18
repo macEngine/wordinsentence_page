@@ -28,9 +28,13 @@ export interface DailySentence {
   translation?: string;
 }
 
+export const DEFAULT_SERIES = '每日一词';
+
 export interface WordPost extends WordEntry {
   /** Post title: frontmatter `title`, else "外刊每日一词：<word>". */
   title: string;
+  /** Series the post belongs to (frontmatter `series`, default 每日一词); also its first tag. */
+  series: string;
   phoneticUk?: string;
   phoneticUs?: string;
   image?: string;
@@ -254,6 +258,11 @@ export function parseWordPost(
 
   const word = fm('word') ?? card.word;
   if (!word) throw new Error('parseWordPost: no word found');
+  // Every post in words/ is one episode of the daily series; the series name
+  // is the first tag so the series has a /tag page like any other label.
+  const series = fm('series') ?? DEFAULT_SERIES;
+  const bodyTags = fmTags ?? card.tags ?? [];
+  const tags = [series, ...bodyTags.filter((t) => t !== series)];
   const sentence = example.sentence;
   if (!sentence) throw new Error(`parseWordPost(${word}): no quoted sentence`);
 
@@ -267,7 +276,8 @@ export function parseWordPost(
     sentence,
     date,
     source: example.source,
-    tags: fmTags ?? (card.tags?.length ? card.tags : undefined),
+    series,
+    tags,
     meaning: fm('gloss') ?? fm('summary') ?? example.analysis?.split('\n\n')[0],
     phoneticUk: card.phoneticUk,
     phoneticUs: card.phoneticUs,

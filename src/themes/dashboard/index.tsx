@@ -25,9 +25,12 @@ import type { WordPost } from '@/core/wordPost';
 import { findBySlug, postSlug } from '@/core/articles';
 import { sortWordsByDate } from '@/core/words';
 import wordsData from '@/static/words.json';
+import lexiconData from '@/static/lexicon.json';
+import { isWordTag, type LexiconEntry } from '@/core/lexicon';
 
 const words = wordsData as WordPost[];
 const sortedWords = sortWordsByDate(words);
+const lexicon = lexiconData as LexiconEntry[];
 import { RouteMap } from '@/components/RouteMap';
 import { CalendarWidget } from '@/components/CalendarWidget';
 import { ProfileCard } from '@/components/ProfileCard';
@@ -54,17 +57,27 @@ const ArticlesPage = lazy(() =>
     default: module.ArticlesPage,
   }))
 );
+const WordPage = lazy(() =>
+  import('@/components/WordPage').then((module) => ({
+    default: module.WordPage,
+  }))
+);
+const WordsPage = lazy(() =>
+  import('@/components/WordsPage').then((module) => ({
+    default: module.WordsPage,
+  }))
+);
 const SummaryPage = lazy(() =>
   import('@/components/SummaryPage').then((module) => ({
     default: module.SummaryPage,
   }))
 );
 
-type Page = 'home' | 'articles' | 'tag' | 'tracks' | 'summary';
-const PAGES: Page[] = ['home', 'articles', 'tag', 'tracks', 'summary'];
+type Page = 'home' | 'articles' | 'tag' | 'word' | 'tracks' | 'summary';
+const PAGES: Page[] = ['home', 'articles', 'tag', 'word', 'tracks', 'summary'];
 interface Route {
   page: Page;
-  /** `articles/<slug>` opens one article; `tag/<tag>` lists posts with that tag. */
+  /** `articles/<slug>` opens one article; `tag/<tag>` lists posts with that tag; `word/<word>` is the word page. */
   slug: string | null;
 }
 const routeFromPath = (pathname: string): Route => {
@@ -74,7 +87,7 @@ const routeFromPath = (pathname: string): Route => {
   const [head, ...rest] = path.split('/');
   const page = PAGES.find((p) => p === head) ?? 'home';
   const slug =
-    (page === 'articles' || page === 'tag') && rest.length
+    (page === 'articles' || page === 'tag' || page === 'word') && rest.length
       ? decodeURIComponent(rest.join('/'))
       : null;
   return { page, slug };
@@ -119,7 +132,10 @@ function Dashboard() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
   const openPost = (post: WordPost) => navigate('articles', postSlug(post));
-  const openTag = (tag: string) => navigate('tag', tag);
+  const openWord = (word: string) => navigate('word', word.toLowerCase());
+  // A Latin-letter tag is a word: it opens the word page, not the tag list.
+  const openTag = (tag: string) =>
+    isWordTag(tag) ? openWord(tag) : navigate('tag', tag);
   const article = route.slug ? findBySlug(words, route.slug) : undefined;
 
   const selectProvince = useCallback((province: string | null) => {
@@ -204,6 +220,23 @@ function Dashboard() {
             posts={words}
             onBack={() => navigate('articles')}
             onOpen={openPost}
+          />
+        ) : page === 'word' && route.slug ? (
+          <WordPage
+            word={route.slug}
+            posts={words}
+            lexicon={lexicon}
+            onBack={() => navigate('word')}
+            onOpen={openPost}
+            onOpenTag={openTag}
+            onOpenWord={openWord}
+          />
+        ) : page === 'word' ? (
+          <WordsPage
+            posts={words}
+            lexicon={lexicon}
+            onBack={() => navigate('home')}
+            onOpenWord={openWord}
           />
         ) : page === 'articles' || page === 'tag' ? (
           <ArticlesPage

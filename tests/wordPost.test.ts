@@ -66,7 +66,7 @@ test('parseWordPost on a post without frontmatter (owner sample)', () => {
   );
   assert.equal(e.articleDate, '2026-07-07');
   assert.equal(e.source, '纽约时报');
-  assert.deepEqual(e.tags, ['托福', 'GRE', 'wrangling', 'wrangle']);
+  assert.deepEqual(e.tags, ['每日一词', '托福', 'GRE', 'wrangling', 'wrangle']);
   assert.equal(e.phoneticUk, '/ˈræŋɡlɪŋ/');
   assert.equal(e.phoneticUs, '/ˈræŋɡlɪŋ/');
   assert.equal(e.image, 'https://blogimg.niuge6.com/i/4421705295567.png');
@@ -110,7 +110,7 @@ ${wrangling}`;
   assert.equal(e.title, '自定义标题');
   assert.equal(e.date, '2026-11-08');
   assert.equal(e.articleDate, '2026-07-01');
-  assert.deepEqual(e.tags, ['六级']);
+  assert.deepEqual(e.tags, ['每日一词', '六级']);
   assert.equal(e.meaning, '扯皮');
 });
 

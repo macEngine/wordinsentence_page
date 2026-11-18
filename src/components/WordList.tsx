@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { isWordTag } from '../core/lexicon';
 import { useLocale } from '../hooks/useLocale';
 import {
   ALL_WORDS_FILTER,
@@ -53,7 +54,11 @@ export function WordList({ words, onOpen }: WordListProps) {
   const [page, setPage] = useState(0);
 
   const sources = useMemo(() => collectSources(words), [words]);
-  const tags = useMemo(() => collectTags(words), [words]);
+  // Word tags (stark, glare…) are not filters; they open the word page.
+  const tags = useMemo(
+    () => collectTags(words).filter((tag) => !isWordTag(tag)),
+    [words]
+  );
   const sorted = useMemo(
     () => sortWordsByDate(filterWords(words, filter)),
     [words, filter]

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { isWordTag } from '../core/lexicon';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
 import {
@@ -36,7 +37,11 @@ export function ArticlesPage({ posts, onBack, onOpen }: ArticlesPageProps) {
 
   const years = useMemo(() => collectYears(posts), [posts]);
   const sources = useMemo(() => collectSources(posts), [posts]);
-  const allTags = useMemo(() => collectTags(posts), [posts]);
+  // Word tags (stark, glare…) are not filters; they open the word page.
+  const allTags = useMemo(
+    () => collectTags(posts).filter((tag) => !isWordTag(tag)),
+    [posts]
+  );
   const shown = useMemo(
     () => sortWordsByDate(filterArticles(posts, filter)),
     [posts, filter]

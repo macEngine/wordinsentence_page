@@ -97,7 +97,7 @@ export function WordsPage({
             />
           </div>
 
-          <div className="overflow-x-auto rounded-b-xl">
+          <div className="overflow-x-auto overflow-y-hidden rounded-b-xl">
             <table className="w-full border-collapse text-sm [&_tbody>tr:last-child>td]:border-b-0 [&_thead_th]:border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
               <thead className="text-left text-xs text-[var(--color-muted)]">
                 <tr>

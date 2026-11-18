@@ -218,9 +218,12 @@ export function firstSense(entry: LexiconEntry): string | undefined {
  */
 export function shortMeaning(post: WordPost): string | undefined {
   const w = normalizeWord(post.word);
-  const row = (post.synonyms ?? []).find((s) =>
-    normalizeWord(s.word).split(/\s+/).includes(w)
-  );
+  // Exact match first ("buck up" row for headword "buck up"); then a row
+  // whose words contain the headword ("lash out" row for headword "lash").
+  const row = (post.synonyms ?? []).find((s) => {
+    const rw = normalizeWord(s.word);
+    return rw === w || rw.split(/\s+/).includes(w);
+  });
   if (row?.nuance) return shortLabel(row.nuance);
   const m = post.analysis?.match(/意思是[“"]([^”"]{1,40})[”"]/);
   return m ? m[1] : undefined;

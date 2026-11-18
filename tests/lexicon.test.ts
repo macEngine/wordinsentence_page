@@ -140,6 +140,17 @@ test('shortMeaning reads the headword row of 近义词辨析', () => {
   assert.equal(shortMeaning(starkPost), '差别明摆着、不容忽视，常带严峻意味');
 });
 
+test('shortMeaning matches a multi-word headword row exactly', () => {
+  const buckUp = parseWordPost(
+    readFileSync('words/2026-10-22-buck-up.md', 'utf8')
+  );
+  assert.equal(shortMeaning(buckUp), '振作起来；给……打气');
+  const lo = parseWordPost(
+    readFileSync('words/2026-10-22-lo-and-behold.md', 'utf8')
+  );
+  assert.ok(shortMeaning(lo)?.startsWith('引出意外或应验的事'));
+});
+
 test('clipExample keeps the one sentence holding the bold word', () => {
   const s = 'First one. They carry **caveats** in a way. Third one.';
   assert.equal(clipExample(s, 'caveat'), 'They carry **caveats** in a way.');

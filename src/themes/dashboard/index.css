@@ -46,6 +46,16 @@ body {
 .dashboard button:disabled {
   cursor: default;
 }
+/* iOS Safari zooms the page when a focused input's font is under 16px and
+   does not zoom back out on navigation. Keep every text field at 16px on
+   phones; the Tailwind text-xs/sm sizes still apply from sm: up. */
+@media (max-width: 639px) {
+  .dashboard input:not([type='checkbox']):not([type='radio']),
+  .dashboard select,
+  .dashboard textarea {
+    font-size: 16px;
+  }
+}
 .dashboard
   button:not(.heatmap-day):not(.calendar-day):not(.track-thumb):not(
     .tag-chip

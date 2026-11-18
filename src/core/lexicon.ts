@@ -137,8 +137,10 @@ export interface WordIndexItem {
   forms: string[];
   /** Has a hand-written lexicon page. */
   hasEntry: boolean;
-  /** First 常用义 as plain text, else the newest post's one-line meaning. */
+  /** First 常用义 as plain text, else a short gloss read off the newest post. */
   sense?: string;
+  /** All 常用义 labels (lexicon entries only), for the numbered column. */
+  senses?: string[];
   /** Labels (六级, GRE…); word tags and the series tag excluded. */
   tags: string[];
   /** Plain text of `## 一眼记住`, searched but not shown in the table. */
@@ -159,13 +161,99 @@ export function plainText(md: string): string {
     .trim();
 }
 
-/** The first list item of `## 常用义`, as plain text. */
-export function firstSense(entry: LexiconEntry): string | undefined {
-  const line = (entry.senses ?? '')
+/**
+ * Every list item of `## 常用义`, as short plain text: the label before the
+ * first bracket or dash, e.g. "adj. 鲜明的、赤裸裸的（对比…）— a stark contrast"
+ * -> "adj. 鲜明的、赤裸裸的".
+ */
+export function senseList(entry: LexiconEntry): string[] {
+  return (entry.senses ?? '')
     .split('\n')
     .map((l) => l.trim())
-    .find((l) => /^(\d+\.|[-*])\s+/.test(l));
-  return line ? plainText(line.replace(/^(\d+\.|[-*])\s+/, '')) : undefined;
+    .filter((l) => /^(\d+\.|[-*])\s+/.test(l))
+    .map((l) => shortLabel(plainText(l.replace(/^(\d+\.|[-*])\s+/, ''))));
+}
+
+/** Cut at the first bracket / dash so only the gloss itself is left. */
+function shortLabel(text: string): string {
+  return text
+    .split(/\s*(?:（|\(|—|–|\s-\s)/)[0]
+    .replace(/[；;，,：:、\s]+$/, '')
+    .trim();
+}
+
+/** The first list item of `## 常用义`, as plain text. */
+export function firstSense(entry: LexiconEntry): string | undefined {
+  return senseList(entry)[0];
+}
+
+/**
+ * One short gloss for a word that has no lexicon entry yet, read off its
+ * post: the headword's row in 近义词辨析, else the “…” after 意思是 in the
+ * 解析, else nothing (the table shows a dash rather than a paragraph).
+ */
+export function shortMeaning(post: WordPost): string | undefined {
+  const w = normalizeWord(post.word);
+  const row = (post.synonyms ?? []).find((s) =>
+    normalizeWord(s.word).split(/\s+/).includes(w)
+  );
+  if (row?.nuance) return shortLabel(row.nuance);
+  const m = post.analysis?.match(/意思是[“"]([^”"]{1,40})[”"]/);
+  return m ? m[1] : undefined;
+}
+
+/**
+ * Clip a quoted example to the one sentence that contains the word (found by
+ * its `**bold**` marker, else by stem). If that sentence is still longer than
+ * `max`, keep a window of words around the hit with … on the cut side(s).
+ * Bold markers are preserved so the renderer can still highlight.
+ */
+export function clipExample(sentence: string, word: string, max = 140): string {
+  const text = sentence.trim();
+  let hit = text.search(/\*\*/);
+  if (hit < 0) {
+    const re = new RegExp(
+      `\\b${word.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      'i'
+    );
+    hit = Math.max(0, text.search(re));
+  }
+  // sentence boundaries: . ! ? followed by space, or Chinese 。！？
+  const bounds = [0];
+  for (const m of text.matchAll(/[.!?…]["”’)]*\s+|[。！？]/g)) {
+    bounds.push((m.index ?? 0) + m[0].length);
+  }
+  bounds.push(text.length);
+  let start = 0;
+  let end = text.length;
+  for (let i = 0; i < bounds.length - 1; i++) {
+    if (hit >= bounds[i] && hit < bounds[i + 1]) {
+      start = bounds[i];
+      end = bounds[i + 1];
+      break;
+    }
+  }
+  let clip = text.slice(start, end).trim();
+  if (clip.length <= max) return clip;
+  // window of words around the hit
+  const rel = hit - start;
+  const words = clip.split(/(\s+)/);
+  let pos = 0;
+  let hitIdx = 0;
+  for (let i = 0; i < words.length; i++) {
+    if (pos + words[i].length > rel) {
+      hitIdx = i;
+      break;
+    }
+    pos += words[i].length;
+  }
+  const span = 16; // tokens (words + separators) on each side ≈ 8 words
+  const from = Math.max(0, hitIdx - span);
+  const to = Math.min(words.length, hitIdx + span + 1);
+  clip = words.slice(from, to).join('').trim();
+  if (from > 0) clip = '…' + clip;
+  if (to < words.length) clip = clip.replace(/[,;:，；：]$/, '') + '…';
+  return clip;
 }
 
 /** Every word the site knows about: lexicon entries plus post headwords. */
@@ -180,6 +268,7 @@ export function collectWordIndex(
       forms: e.forms.filter((f) => f !== e.word),
       hasEntry: true,
       sense: firstSense(e),
+      senses: senseList(e),
       tags: e.tags ?? [],
       hooks: e.hooks ? plainText(e.hooks) : undefined,
       examples: 0,
@@ -213,7 +302,7 @@ export function collectWordIndex(
     item.examples += 1;
     if (!item.latest || p.date > item.latest) {
       item.latest = p.date;
-      if (!item.hasEntry) item.sense = p.meaning;
+      if (!item.hasEntry) item.sense = shortMeaning(p);
     }
     items.set(canonical, item);
   }

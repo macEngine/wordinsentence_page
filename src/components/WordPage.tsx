@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
 import {
+  clipExample,
   examplesForWord,
   findLexiconEntry,
   isWordTag,
@@ -28,7 +29,7 @@ function SectionTitle({ children }: { children: ReactNode }) {
   return <h2 className="mb-2 text-base font-bold">{children}</h2>;
 }
 
-/** One example row: date · source, then the quote with the word highlighted. */
+/** One example row: date · source, then the one sentence (or clause) that holds the word. */
 function ExampleRow({
   post,
   onOpen,
@@ -36,7 +37,7 @@ function ExampleRow({
   post: WordPost;
   onOpen: (post: WordPost) => void;
 }) {
-  const parts = highlightWord(post.sentence, post.word);
+  const parts = highlightWord(clipExample(post.sentence, post.word), post.word);
   return (
     <li>
       <button
@@ -64,11 +65,6 @@ function ExampleRow({
             )
           )}
         </p>
-        {post.translation && (
-          <p className="mt-1 pl-3 text-xs text-[var(--color-muted)]">
-            {post.translation}
-          </p>
-        )}
       </button>
     </li>
   );
@@ -99,7 +95,9 @@ export function WordPage({
   const sample = examples[0];
   const phoneticUk = entry?.phoneticUk ?? sample?.phoneticUk;
   const phoneticUs = entry?.phoneticUs ?? sample?.phoneticUs;
-  const tags = (entry?.tags ?? sample?.tags ?? []).filter((x) => !isWordTag(x));
+  const tags = (entry?.tags ?? sample?.tags ?? []).filter(
+    (x) => !isWordTag(x) && x !== sample?.series
+  );
   const forms = entry?.forms ?? [headword];
   const otherForms = forms.filter((f) => f !== headword);
 

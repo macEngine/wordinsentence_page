@@ -135,7 +135,15 @@ export function WordsPage({
                   <td
                     className={`${CELL} max-w-[26rem] text-[var(--color-text)]`}
                   >
-                    {item.sense ?? (
+                    {item.senses && item.senses.length > 0 ? (
+                      <ol className="list-decimal space-y-0.5 pl-5">
+                        {item.senses.map((sense) => (
+                          <li key={sense}>{sense}</li>
+                        ))}
+                      </ol>
+                    ) : item.sense ? (
+                      <span>{item.sense}</span>
+                    ) : (
                       <span className="text-[var(--color-muted)]">—</span>
                     )}
                   </td>

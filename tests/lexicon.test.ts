@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
+  clipExample,
   collectWordIndex,
   examplesForWord,
   findLexiconEntry,
@@ -10,6 +11,8 @@ import {
   parseLexiconEntry,
   plainText,
   searchWordIndex,
+  senseList,
+  shortMeaning,
   sortWordIndex,
 } from '../src/core/lexicon.ts';
 import { parseWordPost } from '../src/core/wordPost.ts';
@@ -114,4 +117,30 @@ test('searchWordIndex matches word, form, tag and sense; sort is stable', () => 
     ['deluge', 'glaring', 'stark']
   );
   assert.equal(sortWordIndex(index, 'examples', true)[2].word, 'deluge');
+});
+
+test('senseList keeps only the gloss label of each 常用义 item', () => {
+  assert.deepEqual(senseList(stark), [
+    'adj. 鲜明的、赤裸裸的',
+    'adj. 荒凉的、光秃秃的、冷峭的',
+    'adj. 严酷的、毫不留情的',
+    'adv. 完全地',
+  ]);
+});
+
+test('shortMeaning reads the headword row of 近义词辨析', () => {
+  assert.equal(shortMeaning(glaringPost), '显眼到无法忽视，多指错误、问题');
+  assert.equal(shortMeaning(starkPost), '差别明摆着、不容忽视，常带严峻意味');
+});
+
+test('clipExample keeps the one sentence holding the bold word', () => {
+  const s = 'First one. They carry **caveats** in a way. Third one.';
+  assert.equal(clipExample(s, 'caveat'), 'They carry **caveats** in a way.');
+  // long sentence -> window around the hit with ellipses
+  const long =
+    'a b c d e f g h i j k l m n o p q r s t **word** u v w x y z aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp qq rr';
+  const clipped = clipExample(long, 'word', 40);
+  assert.ok(clipped.startsWith('…') && clipped.endsWith('…'));
+  assert.ok(clipped.includes('**word**'));
+  assert.ok(clipped.length < long.length);
 });

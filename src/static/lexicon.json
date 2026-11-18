@@ -1,5 +1,63 @@
 [
   {
+    "word": "allude",
+    "forms": [
+      "allude",
+      "alluded",
+      "alludes",
+      "alluding",
+      "allusion",
+      "allusions"
+    ],
+    "phoneticUk": "/əˈluːd/",
+    "phoneticUs": "/əˈluːd/",
+    "tags": ["六级", "考研", "托福"],
+    "senses": "1. **v. 间接提到、暗指**（几乎总跟 to）— as you alluded to / allude to a problem\n2. **v. 影射、含沙射影**（丑闻、对手）— allude to a rival's past\n3. **allusion n. 典故、暗指** — a literary allusion / make an allusion to",
+    "hooks": "- 🎭 **al-lude = 冲着你开个玩笑** 拉丁 ludere「玩」，不直说、旁敲侧击地点一下，就是 allude。\n- 🧩 **同根 illusion（错觉）** 「在眼前耍把戏」；delude（蒙骗）、ludicrous（荒唐）都是这家人。\n- ⚠️ **别和 elude（躲开）混** 读音像，意思完全不同。",
+    "phrases": "- **allude to** … 提到、暗指……\n- **as you alluded to** 正如你刚提到的\n- **make an allusion to** … 用典、暗指……",
+    "extra": []
+  },
+  {
+    "word": "caveat",
+    "forms": ["caveat", "caveats"],
+    "phoneticUk": "/ˈkæviæt/",
+    "phoneticUs": "/ˈkæviæt/",
+    "tags": ["托福", "GRE"],
+    "senses": "1. **n. 附带条件、限制说明**（\"但有一点要注意\"）— with one caveat / an important caveat\n2. **n. 警告、提醒**（法律/正式语气）— a caveat against overconfidence",
+    "hooks": "- ⚖️ **caveat emptor = 买者自慎** 法律拉丁老话：东西卖出去，好坏买家自己留神。caveat 就是那句\"先说一句，注意……\"。\n- 🛡️ **caveat ≈ caution** 都来自拉丁 cavere「当心」。\n- 🗣️ **口语里 = 但书** \"I agree, with one caveat.\"（同意，但有一点要说）。",
+    "phrases": "- **with one caveat** 但有一点要注意\n- **a major / important caveat** 一个重要的附加条件\n- **caveat emptor** 买者自慎",
+    "extra": []
+  },
+  {
+    "word": "crack",
+    "forms": ["crack", "cracked", "cracks", "cracking"],
+    "phoneticUk": "/kræk/",
+    "phoneticUs": "/kræk/",
+    "tags": ["四级", "六级", "考研"],
+    "senses": "1. **v. 裂开、破裂**（东西\"咔\"地裂了）— the ice cracked / crack an egg\n2. **v. 撑不住、崩溃**（人或经济在压力下垮掉，本文用法）— the consumer finally cracks / crack under pressure\n3. **v. 破解、攻克**（难题、密码、市场）— crack the code / crack the case\n4. **n. 裂缝；一次尝试** — a crack in the wall / have a crack at it",
+    "hooks": "- 💥 **crack 是\"咔\"的一声** 古英语拟声词；东西裂开的声音，引申为\"裂开 → 垮掉\"。\n- 🥚 **鸡蛋先裂再碎** 裂缝（crack）是垮掉（crash）之前的那一声——所以 crack 常指\"快撑不住了\"。\n- 🔓 **crack the code = 把密码敲开** 攻克难题也是\"敲开一条缝\"。",
+    "phrases": "- **crack under pressure** 在压力下崩溃\n- **crack down on** … 严厉打击……\n- **crack the code / case** 破解密码 / 破案\n- **have a crack at** … 试一把……",
+    "extra": []
+  },
+  {
+    "word": "cringe",
+    "forms": [
+      "cringe",
+      "cringed",
+      "cringes",
+      "cringing",
+      "cringey",
+      "cringeworthy"
+    ],
+    "phoneticUk": "/krɪndʒ/",
+    "phoneticUs": "/krɪndʒ/",
+    "tags": ["六级", "托福"],
+    "senses": "1. **v. 尴尬得浑身别扭、畏缩** — cringe at my old photos / make someone cringe\n2. **v. 害怕地蜷缩、退缩** — the dog cringed in the corner\n3. **adj. 网络用法：尴尬到没法看的** — that video is so cringe / cringeworthy",
+    "hooks": "- 🫣 **cringe = 脚趾抠地** 看到极度尴尬的场面，身子不自觉往回缩，这个动作就是 cringe。\n- 🪦 **\"社死\"的英文就是 cringe** 网络流行语 cringe / cringey：尴尬得让人受不了。\n- 🐕 **原义是蜷缩** 古英语 cringan「屈服、倒下」，身子往回缩。",
+    "phrases": "- **cringe at** … 看到……浑身别扭\n- **make someone cringe** 让人尴尬得想躲\n- **a cringeworthy moment** 尴尬的瞬间",
+    "extra": []
+  },
+  {
     "word": "deluge",
     "forms": ["deluge", "deluged", "deluges", "deluging"],
     "phoneticUk": "/ˈdeljuːdʒ/",
@@ -11,6 +69,39 @@
     "extra": []
   },
   {
+    "word": "falter",
+    "forms": ["falter", "faltered", "falters", "faltering"],
+    "phoneticUk": "/ˈfɔːltə(r)/",
+    "phoneticUs": "/ˈfɔːltər/",
+    "tags": ["六级", "考研", "托福"],
+    "senses": "1. **v. 失去势头、变弱**（经济、增长、支持率）— the recovery faltered / faltering demand\n2. **v. 动摇、犹豫**（决心、信心）— her courage never faltered\n3. **v. 结巴、脚步不稳**（说话、走路）— his voice faltered / falter on the stairs",
+    "hooks": "- 🚶 **falter = 走路打晃** 最早指脚步不稳、摇摇晃晃；经济\"falter\"就是走着走着晃了一下，还没倒。\n- 📉 **falter ≠ fail** 失去势头、变弱，但未必彻底失败——程度比 collapse 轻得多。\n- 🗣️ **声音 falter = 说着说着抖了** 哭之前那种声音发颤。",
+    "phrases": "- **the economy / recovery falters** 经济 / 复苏失去动力\n- **never falter in** … 在……上从不动摇\n- **a faltering voice** 颤抖的声音",
+    "extra": []
+  },
+  {
+    "word": "glaring",
+    "forms": ["glaring", "glare", "glared", "glares", "glaringly"],
+    "phoneticUk": "/ˈɡleərɪŋ/",
+    "phoneticUs": "/ˈɡlerɪŋ/",
+    "tags": ["六级", "考研", "托福"],
+    "senses": "1. **adj. 明显得刺眼的、无法忽视的**（错误、问题、差距）— a glaring error / a glaring omission\n2. **adj. 刺眼的、炫目的**（光）— glaring headlights\n3. **glare v./n. 怒视；强光** — glare at someone / the glare of the sun",
+    "hooks": "- 🔦 **glaring = 像探照灯一样刺眼** glare 本是\"强光、发光\"（和 glass 同源）；错误 glaring，就是亮得没法不看见。\n- 😠 **glare at = 瞪** 眼里\"发光\"地盯着人看，就是怒视。\n- 🪞 **glaring ≠ obvious** obvious 只是\"明显\"，glaring 带着\"刺眼、丢脸\"的意味。",
+    "phrases": "- **a glaring error / mistake** 一个明显得刺眼的错误\n- **a glaring omission** 显而易见的遗漏\n- **glare at** … 瞪着……",
+    "extra": []
+  },
+  {
+    "word": "stall",
+    "forms": ["stall", "stalled", "stalls", "stalling"],
+    "phoneticUk": "/stɔːl/",
+    "phoneticUs": "/stɔːl/",
+    "tags": ["六级", "考研", "托福"],
+    "senses": "1. **v. 停滞、卡住**（进展、谈判、经济，本文用法）— progress stalls / talks have stalled\n2. **v. 发动机熄火、飞机失速** — the engine stalled\n3. **v. 拖延、支吾**（故意拖时间）— stop stalling and answer\n4. **n. 摊位；马厩的隔间** — a market stall / a horse stall",
+    "hooks": "- 🐴 **stall = 马厩** 最早就是\"马栏\"；马进了栏就不走了，所以 stall 引申为\"卡住、停下\"。\n- 🚗 **车 stall = 熄火** 开着开着突然不动了——经济 stall 就是这个画面。\n- ⏳ **stall for time = 磨洋工** 故意让事情停下来拖时间。",
+    "phrases": "- **progress / talks stall** 进展 / 谈判停滞\n- **stall out** 停滞不前\n- **stall for time** 拖延时间\n- **a market stall** 市场摊位",
+    "extra": []
+  },
+  {
     "word": "stark",
     "forms": ["stark", "starkly", "starkness"],
     "phoneticUk": "/stɑːk/",
@@ -19,6 +110,17 @@
     "senses": "1. **adj. 鲜明的、赤裸裸的**（对比、现实、数据，不加修饰地摆在眼前）— a stark contrast / the stark reality / stark figures\n2. **adj. 荒凉的、光秃秃的、冷峭的**（景色、房间、建筑）— a stark landscape / a stark white room\n3. **adj. 严酷的、毫不留情的**（选择、警告）— a stark choice / a stark warning\n4. **adv. 完全地**（只用在几个固定搭配里）— stark naked / stark raving mad",
     "hooks": "- 🏰 **史塔克家族 = House Stark** 《权力的游戏》里的北境之主：寒冬、直来直去，冷峭、赤裸、不加修饰——就是 stark。\n- 🧊 **古英语 stearc = 硬、僵** 硬到没有一点柔软和装饰。",
     "phrases": "- **in stark contrast to** … 与……形成鲜明对比\n- **the stark reality / truth** 赤裸裸的现实 / 真相\n- **a stark reminder of** … 一个冷峭的提醒\n- **stark naked** 一丝不挂",
+    "extra": []
+  },
+  {
+    "word": "wrangling",
+    "forms": ["wrangling", "wrangle", "wrangled", "wrangles", "wrangler"],
+    "phoneticUk": "/ˈræŋɡlɪŋ/",
+    "phoneticUs": "/ˈræŋɡlɪŋ/",
+    "tags": ["托福", "GRE"],
+    "senses": "1. **n. 冗长反复的争执、扯皮**（法律、政治、预算）— legal wrangling / months of wrangling over the budget\n2. **wrangle v. 争吵、争执** — wrangle over the details\n3. **wrangle v. 赶牲口；设法弄到**（美式） — wrangle cattle / wrangle a ticket",
+    "hooks": "- 👖 **Wrangler 牛仔裤 = 牛仔** wrangler 本是赶牛的牛仔，跟牛较劲——wrangling 就是\"跟人较劲、来回扯皮\"。\n- 🤼 **wrangle 和 wrestle 是亲戚** 都带\"揪扯、角力\"的味道；嘴上的角力就是 wrangling。\n- ⚖️ **legal wrangling = 打官司扯皮** 来来回回拖很久，不是一次吵架。",
+    "phrases": "- **legal / political wrangling** 法律 / 政治上的扯皮\n- **wrangle over** … 为……争执不休\n- **months of wrangling** 数月的拉锯",
     "extra": []
   }
 ]

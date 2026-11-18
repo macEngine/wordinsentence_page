@@ -73,7 +73,7 @@ export function WordsPage({
   );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
+    <div className="mx-auto max-w-[1140px] px-4 py-5 sm:px-6 sm:py-6">
       <div
         className={`mx-auto max-w-[1100px] ${BOX} shadow-[1px_1px_4px_rgba(0,0,0,0.22)]`}
       >

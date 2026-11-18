@@ -19,7 +19,7 @@ export function TagPage({ tag, posts, onBack, onOpen }: TagPageProps) {
     [posts, tag]
   );
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
+    <div className="mx-auto max-w-[1248px] px-4 py-5 sm:px-6 sm:py-6">
       <div className="mx-auto max-w-[960px] rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
         <nav className="flex items-center gap-1.5 border-b border-[var(--color-border)] px-4 py-2.5 text-sm">
           <button

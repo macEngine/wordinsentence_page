@@ -121,8 +121,8 @@ export function WordPage({
   );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="mx-auto max-w-[1248px] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_288px]">
         {/* Main column */}
         <div className="flex min-w-0 flex-col gap-4">
           <div className={BOX}>

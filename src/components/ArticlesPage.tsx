@@ -66,8 +66,8 @@ export function ArticlesPage({
     filter.query !== '' || filter.tags.length > 0 || filter.source !== null;
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="mx-auto max-w-[1248px] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_288px]">
         <div className={`min-w-0 ${BOX}`}>
           {/* Tab bar: years left, sources right */}
           <div className="flex flex-wrap items-center gap-1.5 border-b border-[var(--color-border)] px-4 py-3">

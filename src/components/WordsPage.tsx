@@ -74,8 +74,8 @@ export function WordsPage({
   );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="mx-auto max-w-[1248px] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_288px]">
         <div className={`min-w-0 ${BOX} shadow-[1px_1px_4px_rgba(0,0,0,0.22)]`}>
           {/* Title bar: name left, search right (Codeforces-style) */}
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-t-xl border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-border)_45%,var(--color-card))] px-3 py-1.5">

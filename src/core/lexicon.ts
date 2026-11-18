@@ -174,6 +174,30 @@ export function senseList(entry: LexiconEntry): string[] {
     .map((l) => shortLabel(plainText(l.replace(/^(\d+\.|[-*])\s+/, ''))));
 }
 
+export interface SenseItem {
+  /** The gloss, e.g. "adj. 鲜明的、赤裸裸的" (the **bold** run, else the whole line). */
+  label: string;
+  /** Scope note and collocations after the label, plain text. */
+  detail?: string;
+}
+
+/** Every `## 常用义` item split into its bold label and the rest. */
+export function senseItems(entry: LexiconEntry): SenseItem[] {
+  return (entry.senses ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => /^(\d+\.|[-*])\s+/.test(l))
+    .map((l) => {
+      const body = l.replace(/^(\d+\.|[-*])\s+/, '');
+      const m = body.match(/^\*\*(.+?)\*\*\s*(.*)$/s);
+      if (!m) return { label: plainText(body) };
+      const detail = plainText(m[2])
+        .replace(/^[—–\-:：]\s*/, '')
+        .trim();
+      return { label: m[1].trim(), detail: detail || undefined };
+    });
+}
+
 /** Cut at the first bracket / dash so only the gloss itself is left. */
 function shortLabel(text: string): string {
   return text

@@ -13,6 +13,7 @@ import {
   parseLexiconEntry,
   plainText,
   searchWordIndex,
+  senseItems,
   senseList,
   shortMeaning,
   sortWordIndex,
@@ -173,4 +174,12 @@ test('formsWithExamples lists only forms seen in posts', () => {
     formsWithExamples([glaringPost], [glaringEntry], 'glaring'),
     [{ form: 'glare', count: 1 }]
   );
+});
+
+test('senseItems splits the bold label from the detail', () => {
+  const items = senseItems(stark);
+  assert.equal(items[0].label, 'adj. 鲜明的、赤裸裸的');
+  assert.match(items[0].detail ?? '', /^（对比、现实、数据/);
+  assert.match(items[0].detail ?? '', /a stark contrast/);
+  assert.equal(items.length, 4);
 });

@@ -34,10 +34,14 @@ const markdownComponents = {
     </blockquote>
   ),
   ul: ({ children }: { children?: ReactNode }) => (
-    <ul className="my-2 list-disc space-y-0.5 pl-5 text-sm">{children}</ul>
+    <ul className="my-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed">
+      {children}
+    </ul>
   ),
   ol: ({ children }: { children?: ReactNode }) => (
-    <ol className="my-2 list-decimal space-y-0.5 pl-5 text-sm">{children}</ol>
+    <ol className="my-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed">
+      {children}
+    </ol>
   ),
   code: ({ children }: { children?: ReactNode }) => (
     <code className="rounded-full border border-[var(--color-border)] px-2 py-0.5 font-sans text-xs text-[var(--color-muted)]">

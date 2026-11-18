@@ -7,6 +7,7 @@ import {
   findLexiconEntry,
   formsWithExamples,
   hookItems,
+  senseItems,
   isWordTag,
   type LexiconEntry,
 } from '../core/lexicon';
@@ -106,6 +107,7 @@ export function WordPage({
     [posts, lexicon, word]
   );
   const hooks = entry ? hookItems(entry) : [];
+  const senses = entry ? senseItems(entry) : [];
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
@@ -143,10 +145,23 @@ export function WordPage({
             </div>
 
             <div className="border-t border-[var(--color-border)] px-4 py-4 sm:px-6 sm:py-5">
-              {entry?.senses ? (
+              {senses.length > 0 ? (
                 <section>
                   <SectionTitle>{t('senses')}</SectionTitle>
-                  <PostMarkdown>{entry.senses}</PostMarkdown>
+                  <ol className="list-decimal space-y-2.5 pl-6 leading-relaxed marker:text-[var(--color-muted)]">
+                    {senses.map((sense) => (
+                      <li key={sense.label}>
+                        <span className="text-[15px] font-semibold">
+                          {sense.label}
+                        </span>
+                        {sense.detail && (
+                          <span className="ml-2 text-sm text-[var(--color-muted)]">
+                            {sense.detail}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
                 </section>
               ) : (
                 <p className="text-sm text-[var(--color-muted)]">
@@ -203,7 +218,7 @@ export function WordPage({
               </h2>
               <ul className="divide-y divide-[var(--color-border)]">
                 {hooks.map((h) => (
-                  <li key={h.title} className="px-3 py-3 text-center">
+                  <li key={h.title} className="px-3 py-2.5">
                     <p className="text-base leading-snug font-bold">
                       {h.title}
                     </p>

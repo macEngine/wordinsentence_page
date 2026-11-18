@@ -7,6 +7,8 @@ import {
   examplesForWord,
   findLexiconEntry,
   firstSense,
+  formsWithExamples,
+  hookItems,
   isWordTag,
   parseLexiconEntry,
   plainText,
@@ -35,7 +37,7 @@ test('parseLexiconEntry reads frontmatter and the three named sections', () => {
   assert.match(stark.hooks ?? '', /史塔克/);
   assert.match(stark.phrases ?? '', /in stark contrast to/);
   assert.deepEqual(stark.extra, []);
-  assert.match(deluge.hooks ?? '', /after me, the deluge/);
+  assert.match(deluge.phrases ?? '', /after me, the deluge/);
 });
 
 test('parseLexiconEntry requires a word', () => {
@@ -143,4 +145,32 @@ test('clipExample keeps the one sentence holding the bold word', () => {
   assert.ok(clipped.startsWith('…') && clipped.endsWith('…'));
   assert.ok(clipped.includes('**word**'));
   assert.ok(clipped.length < long.length);
+});
+
+test('hookItems: emoji + bold headline, short note', () => {
+  const items = hookItems(deluge);
+  assert.equal(items.length, 3);
+  assert.equal(items[0].title, '🌊 圣经大洪水 the Deluge');
+  assert.equal(items[0].note, '诺亚方舟那场。不是下雨，是把一切冲走。');
+  assert.equal(items[1].title, '👑 Après moi, le déluge');
+  assert.deepEqual(
+    hookItems(
+      parseLexiconEntry('---\nword: x\n---\n## 一眼记住\n- plain line')
+    ),
+    [{ title: 'plain line' }]
+  );
+});
+
+test('formsWithExamples lists only forms seen in posts', () => {
+  // stark's forms starkly / starkness never appear -> nothing to show
+  assert.deepEqual(formsWithExamples([starkPost], [stark], 'stark'), []);
+  // glaring is tagged `glare` on its post -> glare shows with count 1
+  assert.deepEqual(formsWithExamples([glaringPost], [], 'glaring'), []);
+  const glaringEntry = parseLexiconEntry(
+    '---\nword: glaring\nforms: [glaring, glare]\n---\n'
+  );
+  assert.deepEqual(
+    formsWithExamples([glaringPost], [glaringEntry], 'glaring'),
+    [{ form: 'glare', count: 1 }]
+  );
 });

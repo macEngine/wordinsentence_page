@@ -5,6 +5,8 @@ import {
   clipExample,
   examplesForWord,
   findLexiconEntry,
+  formsWithExamples,
+  hookItems,
   isWordTag,
   type LexiconEntry,
 } from '../core/lexicon';
@@ -98,8 +100,12 @@ export function WordPage({
   const tags = (entry?.tags ?? sample?.tags ?? []).filter(
     (x) => !isWordTag(x) && x !== sample?.series
   );
-  const forms = entry?.forms ?? [headword];
-  const otherForms = forms.filter((f) => f !== headword);
+  // Only forms that actually appear in a post; nothing to show otherwise.
+  const otherForms = useMemo(
+    () => formsWithExamples(posts, lexicon, word),
+    [posts, lexicon, word]
+  );
+  const hooks = entry ? hookItems(entry) : [];
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6">
@@ -187,10 +193,29 @@ export function WordPage({
 
         {/* Sidebar: right column on desktop, below on phones */}
         <div className="flex flex-col gap-4 lg:sticky lg:top-[var(--header-offset)]">
-          {entry?.hooks && (
-            <SideCard title={t('hooks')}>
-              <PostMarkdown>{entry.hooks}</PostMarkdown>
-            </SideCard>
+          {hooks.length > 0 && (
+            <div className={BOX}>
+              <h2 className="border-b border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold">
+                <span aria-hidden className="mr-1.5 text-[var(--color-accent)]">
+                  →
+                </span>
+                {t('hooks')}
+              </h2>
+              <ul className="divide-y divide-[var(--color-border)]">
+                {hooks.map((h) => (
+                  <li key={h.title} className="px-3 py-3 text-center">
+                    <p className="text-base leading-snug font-bold">
+                      {h.title}
+                    </p>
+                    {h.note && (
+                      <p className="mt-1 text-xs leading-relaxed text-[var(--color-muted)]">
+                        {h.note}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           {entry?.phrases && (
             <SideCard title={t('phrases')}>
@@ -200,13 +225,14 @@ export function WordPage({
           {otherForms.length > 0 && (
             <SideCard title={t('forms')}>
               <p className="flex flex-wrap gap-1.5 font-mono text-sm">
-                {otherForms.map((f) => (
+                {otherForms.map(({ form, count }) => (
                   <button
-                    key={f}
-                    onClick={() => onOpenWord(f)}
+                    key={form}
+                    onClick={() => onOpenWord(form)}
                     className={CHIP}
+                    title={`${count} ${t('examplesCount')}`}
                   >
-                    {f}
+                    {form}
                   </button>
                 ))}
               </p>

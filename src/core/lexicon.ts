@@ -347,3 +347,63 @@ export function sortWordIndex(
     (a, b) => (desc ? -cmp(a, b) : cmp(a, b)) || a.word.localeCompare(b.word)
   );
 }
+
+export interface HookItem {
+  /** The headline: leading emoji (if any) plus the first **bold** run. */
+  title: string;
+  /** The rest of the bullet, plain text, short. */
+  note?: string;
+}
+
+/**
+ * `## 一眼记住` bullets as headline + note pairs, one per bullet. The first
+ * `**bold**` run is the headline; a leading emoji stays with it. Bullets
+ * without bold use the whole line as the headline.
+ */
+export function hookItems(entry: LexiconEntry): HookItem[] {
+  return (entry.hooks ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => {
+      const body = l.replace(/^[-*]\s+/, '');
+      const m = body.match(/^(\S*?)\s*\*\*(.+?)\*\*\s*(.*)$/s);
+      if (!m) return { title: plainText(body) };
+      const [, lead, bold, rest] = m;
+      const emoji = /^\p{Extended_Pictographic}/u.test(lead) ? lead : '';
+      const pre = emoji ? '' : plainText(lead);
+      const note = plainText(rest)
+        .replace(/^[：:—–\-,，。]+\s*/, '')
+        .trim();
+      return {
+        title: [emoji, pre, bold].filter(Boolean).join(' ').trim(),
+        note: note || undefined,
+      };
+    });
+}
+
+/**
+ * Of a word's forms, only those that actually appear in the posts (as a
+ * headword or a word tag), with their example counts. The canonical word is
+ * excluded; an empty result means "nothing to show".
+ */
+export function formsWithExamples(
+  posts: WordPost[],
+  entries: LexiconEntry[],
+  word: string
+): { form: string; count: number }[] {
+  const entry = findLexiconEntry(entries, word);
+  const canonical = entry?.word ?? normalizeWord(word);
+  const forms = entry?.forms ?? [canonical];
+  return forms
+    .filter((f) => f !== canonical)
+    .map((form) => ({
+      form,
+      count: posts.filter(
+        (p) =>
+          normalizeWord(p.word) === form ||
+          (p.tags ?? []).some((t) => isWordTag(t) && normalizeWord(t) === form)
+      ).length,
+    }))
+    .filter((f) => f.count > 0);
+}

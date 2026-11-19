@@ -225,8 +225,13 @@ export function shortMeaning(post: WordPost): string | undefined {
     return rw === w || rw.split(/\s+/).includes(w);
   });
   if (row?.nuance) return shortLabel(row.nuance);
-  const m = post.analysis?.match(/意思是[“"]([^”"]{1,40})[”"]/);
-  return m ? m[1] : undefined;
+  // Older posts (2026-01..06) phrase the 解析 as 原意是指“…”，引申为“…”;
+  // the extended sense is the one the article uses, so prefer it.
+  for (const lead of ['引申为', '意思是', '原意是指']) {
+    const m = post.analysis?.match(new RegExp(`${lead}[“"]([^”"]{1,40})[”"]`));
+    if (m) return m[1];
+  }
+  return undefined;
 }
 
 /**

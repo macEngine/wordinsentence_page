@@ -140,6 +140,13 @@ test('shortMeaning reads the headword row of 近义词辨析', () => {
   assert.equal(shortMeaning(starkPost), '差别明摆着、不容忽视，常带严峻意味');
 });
 
+test('shortMeaning falls back to 引申为/原意是指 in older posts', () => {
+  const post = parseWordPost(
+    `## 📖 词汇卡片\n**quell** 英 /kwel/ 美 /kwel/\n\`六级\`\n\n## 📰 今日例句\n**quell** 是《纽约时报》（2026 年 1 月 29 日刊）播客 **"X"** 中出现的一个单词：\n\n> They tried to **quell** the unrest.\n\n**解析：**\n从拼写上来看，quell 其原意是指"镇压、平息"，引申为"压制、制止"。\n\n## 🔄 近义词辨析\n| 词汇 | 含义侧重 | 例句 |\n|---|---|---|\n| **suppress** | 压制 | suppress a revolt |\n`
+  );
+  assert.equal(shortMeaning(post), '压制、制止');
+});
+
 test('shortMeaning matches a multi-word headword row exactly', () => {
   const buckUp = parseWordPost(
     readFileSync('words/2026-10-22-buck-up.md', 'utf8')

@@ -200,10 +200,14 @@ export function senseItems(entry: LexiconEntry): SenseItem[] {
 
 /** Cut at the first bracket / dash so only the gloss itself is left. */
 function shortLabel(text: string): string {
-  return text
-    .split(/\s*(?:（|\(|—|–|\s-\s)/)[0]
-    .replace(/[；;，,：:、\s]+$/, '')
-    .trim();
+  return (
+    text
+      // a leading “（对某变化的）强烈反弹” qualifier is dropped, not kept
+      .replace(/^\s*(?:（[^）]*）|\([^)]*\))\s*/, '')
+      .split(/\s*(?:（|\(|—|–|\s-\s)/)[0]
+      .replace(/[；;，,：:、\s]+$/, '')
+      .trim()
+  );
 }
 
 /** The first list item of `## 常用义`, as plain text. */
@@ -221,13 +225,30 @@ export function shortMeaning(post: WordPost): string | undefined {
   // Exact match first ("buck up" row for headword "buck up"); then a row
   // whose words contain the headword ("lash out" row for headword "lash").
   const row = (post.synonyms ?? []).find((s) => {
-    const rw = normalizeWord(s.word);
-    return rw === w || rw.split(/\s+/).includes(w);
+    // "crater(v.)", "chip away (at)" -> "crater", "chip away"
+    const rw = normalizeWord(
+      s.word.replace(/\s*(?:\([^)]*\)|（[^）]*）)/g, '')
+    );
+    return (
+      rw === w ||
+      rw.split(/\s+/).includes(w) ||
+      // "crater" row for headword "cratering"
+      (rw.length >= 4 && w.startsWith(rw))
+    );
   });
   if (row?.nuance) return shortLabel(row.nuance);
   // Older posts (2026-01..06) phrase the 解析 as 原意是指“…”，引申为“…”;
   // the extended sense is the one the article uses, so prefer it.
-  for (const lead of ['引申为', '意思是', '原意是指']) {
+  for (const lead of [
+    '引申为',
+    '意思是',
+    '现代含义是',
+    '原意是',
+    '本义是',
+    '基本含义是',
+    '意为',
+    '表示',
+  ]) {
     const m = post.analysis?.match(new RegExp(`${lead}[“"]([^”"]{1,40})[”"]`));
     if (m) return m[1];
   }

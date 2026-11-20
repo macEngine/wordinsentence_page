@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { isWordTag } from '../core/lexicon';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
@@ -11,7 +11,9 @@ import {
   toggleTag,
   type ArticleFilter,
 } from '../core/articles';
-import { sortWordsByDate } from '../core/words';
+import { paginate, sortWordsByDate } from '../core/words';
+import { LIST_PAGE_SIZE } from '../core/pager';
+import { Pager } from './Pager';
 import { collectWordIndex, type LexiconEntry } from '../core/lexicon';
 import { PostList } from './PostList';
 import { BOX } from './SideCard';
@@ -60,8 +62,20 @@ export function ArticlesPage({
     () => sortWordsByDate(filterArticles(posts, filter)),
     [posts, filter]
   );
-  const change = (next: Partial<ArticleFilter>) =>
+  const [page, setPage] = useState(0);
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const slice = useMemo(
+    () => paginate(shown, page, LIST_PAGE_SIZE),
+    [shown, page]
+  );
+  const change = (next: Partial<ArticleFilter>) => {
+    setPage(0);
     setFilter((f) => ({ ...f, ...next }));
+  };
+  const goTo = (next: number) => {
+    setPage(next);
+    listTopRef.current?.scrollIntoView({ block: 'start' });
+  };
   const hasFilter =
     filter.query !== '' || filter.tags.length > 0 || filter.source !== null;
 
@@ -158,12 +172,26 @@ export function ArticlesPage({
             )}
           </div>
 
-          <div className="px-3">
-            <PostList posts={shown} onOpen={onOpen} emptyText={t('noWords')} />
+          <div
+            ref={listTopRef}
+            className="scroll-mt-[var(--header-offset)] px-3"
+          >
+            <PostList
+              posts={slice.items}
+              onOpen={onOpen}
+              emptyText={t('noWords')}
+            />
           </div>
 
-          <div className="border-t border-[var(--color-border)] px-4 py-2.5 text-xs text-[var(--color-muted)]">
-            {shown.length} {t('articlesCount')}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-muted)]">
+            <span>
+              {shown.length} {t('articlesCount')}
+            </span>
+            <Pager
+              page={slice.page}
+              totalPages={slice.totalPages}
+              onChange={goTo}
+            />
           </div>
         </div>
 

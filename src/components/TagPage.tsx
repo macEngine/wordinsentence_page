@@ -1,7 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
-import { sortWordsByDate } from '../core/words';
+import { paginate, sortWordsByDate } from '../core/words';
+import { LIST_PAGE_SIZE } from '../core/pager';
+import { Pager } from './Pager';
 import { PostList } from './PostList';
 
 interface TagPageProps {
@@ -18,6 +20,16 @@ export function TagPage({ tag, posts, onBack, onOpen }: TagPageProps) {
     () => sortWordsByDate(posts.filter((p) => (p.tags ?? []).includes(tag))),
     [posts, tag]
   );
+  const [page, setPage] = useState(0);
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const slice = useMemo(
+    () => paginate(shown, page, LIST_PAGE_SIZE),
+    [shown, page]
+  );
+  const goTo = (next: number) => {
+    setPage(next);
+    listTopRef.current?.scrollIntoView({ block: 'start' });
+  };
   return (
     <div className="mx-auto max-w-[1248px] px-4 py-5 sm:px-6 sm:py-6">
       <div className="mx-auto max-w-[960px] rounded-xl border border-[var(--color-border)] bg-[var(--color-card)]">
@@ -33,11 +45,22 @@ export function TagPage({ tag, posts, onBack, onOpen }: TagPageProps) {
           </span>
           <span className="font-medium">{tag}</span>
         </nav>
-        <div className="px-3">
-          <PostList posts={shown} onOpen={onOpen} emptyText={t('noWords')} />
+        <div ref={listTopRef} className="scroll-mt-[var(--header-offset)] px-3">
+          <PostList
+            posts={slice.items}
+            onOpen={onOpen}
+            emptyText={t('noWords')}
+          />
         </div>
-        <div className="border-t border-[var(--color-border)] px-4 py-2.5 text-xs text-[var(--color-muted)]">
-          {shown.length} {t('articlesCount')}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-muted)]">
+          <span>
+            {shown.length} {t('articlesCount')}
+          </span>
+          <Pager
+            page={slice.page}
+            totalPages={slice.totalPages}
+            onChange={goTo}
+          />
         </div>
       </div>
     </div>

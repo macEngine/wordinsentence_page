@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
 import type { WordPost } from '../core/wordPost';
 import {
@@ -10,6 +10,9 @@ import {
 } from '../core/lexicon';
 import { BOX } from './SideCard';
 import { SiteSidebar } from './SiteSidebar';
+import { Pager } from './Pager';
+import { LIST_PAGE_SIZE } from '../core/pager';
+import { paginate } from '../core/words';
 
 interface WordsPageProps {
   posts: WordPost[];
@@ -48,7 +51,18 @@ export function WordsPage({
     () => sortWordIndex(searchWordIndex(items, query), sortKey, desc),
     [items, query, sortKey, desc]
   );
+  const [page, setPage] = useState(0);
+  const tableTopRef = useRef<HTMLDivElement>(null);
+  const slice = useMemo(
+    () => paginate(shown, page, LIST_PAGE_SIZE),
+    [shown, page]
+  );
+  const goTo = (next: number) => {
+    setPage(next);
+    tableTopRef.current?.scrollIntoView({ block: 'start' });
+  };
   const sortBy = (key: WordSortKey) => {
+    setPage(0);
     if (key === sortKey) setDesc((d) => !d);
     else {
       setSortKey(key);
@@ -90,14 +104,20 @@ export function WordsPage({
             <input
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setPage(0);
+                setQuery(e.target.value);
+              }}
               placeholder={t('searchWords')}
               aria-label={t('searchWords')}
               className="w-full rounded border border-[var(--color-border)] bg-transparent px-2 py-0.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none sm:w-72"
             />
           </div>
 
-          <div className="overflow-x-auto overflow-y-hidden rounded-b-xl">
+          <div
+            ref={tableTopRef}
+            className="scroll-mt-[var(--header-offset)] overflow-x-auto overflow-y-hidden"
+          >
             <table className="w-full border-collapse text-sm [&_tbody>tr:last-child>td]:border-b-0 [&_thead_th]:border-t-0 [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
               <thead className="text-left text-xs text-[var(--color-muted)]">
                 <tr>
@@ -113,7 +133,7 @@ export function WordsPage({
                 </tr>
               </thead>
               <tbody>
-                {shown.map((item) => (
+                {slice.items.map((item) => (
                   <tr
                     key={item.word}
                     className="odd:bg-[var(--color-bg)] hover:bg-[var(--color-accent)]/10"
@@ -189,6 +209,16 @@ export function WordsPage({
                 )}
               </tbody>
             </table>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-b-xl border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-muted)]">
+            <span>
+              {shown.length} {t('wordsCount')}
+            </span>
+            <Pager
+              page={slice.page}
+              totalPages={slice.totalPages}
+              onChange={goTo}
+            />
           </div>
         </div>
 

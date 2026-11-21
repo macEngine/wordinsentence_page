@@ -223,3 +223,11 @@ test('phraseItems and phraseExamples link phrases to the sentences using them', 
   assert.match('the stark truth', phraseRegex('the stark reality / truth')!);
   assert.equal(phraseRegex('…'), null);
 });
+
+test('parseWordPost finds the source line when it says 中转述…出现的', () => {
+  const post = parseWordPost(
+    `## 📖 词汇卡片\n**animosity** 英 /æ/ 美 /æ/\n\`托福\`\n\n## 📰 今日例句\n**animosity** 是《纽约时报》（2026 年 7 月 14 日刊）播客 **"X"（译）** 中转述某人的一段话里出现的一个单词：\n\n> There is deep **animosity**.\n\n**解析：**\nanimosity 意思是“敌意”。\n`
+  );
+  assert.equal(post.date, '2026-07-14');
+  assert.equal(post.source, '纽约时报');
+});

@@ -167,7 +167,11 @@ function parseCard(section: string | undefined) {
 function parseExample(section: string | undefined) {
   if (!section) return {};
   const paras = paragraphs(section);
-  const sourcePara = paras.find((p) => /中出现的/.test(p));
+  // "…播客 **"X"** 中出现的一个单词" — and variants such as
+  // "中转述…的一段话里出现的" / "中以复合词 **sanctions-busting** 出现的".
+  const sourcePara =
+    paras.find((p) => /中出现的/.test(p)) ??
+    paras.find((p) => /《[^》]+》/.test(p) && /出现的/.test(p));
   const sourceDetail = sourcePara ? stripBold(sourcePara) : undefined;
   const source = sourceDetail?.match(/《([^》]+)》/)?.[1];
   const articleDate = normalizeDate(sourceDetail);

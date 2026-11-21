@@ -10,13 +10,13 @@ import {
   sortWordsByDate,
   type WordFilter,
 } from '../core/words';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import { PostList } from './PostList';
 
 interface WordListProps {
-  words: WordPost[];
+  words: WordPostSummary[];
   /** Open the article detail page for a word. */
-  onOpen: (post: WordPost) => void;
+  onOpen: (post: WordPostSummary) => void;
 }
 
 const PILL_ON = 'bg-[var(--color-accent)] text-[var(--color-on-accent)]';

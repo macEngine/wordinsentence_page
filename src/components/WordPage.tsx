@@ -1,6 +1,6 @@
 import { useMemo, type ReactNode } from 'react';
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import {
   clipExample,
   examplesForWord,
@@ -19,10 +19,10 @@ import { BOX, SideCard } from './SideCard';
 
 interface WordPageProps {
   word: string;
-  posts: WordPost[];
+  posts: WordPostSummary[];
   lexicon: LexiconEntry[];
   onBack: () => void;
-  onOpen: (post: WordPost) => void;
+  onOpen: (post: WordPostSummary) => void;
   onOpenTag: (tag: string) => void;
   onOpenWord: (word: string) => void;
 }
@@ -39,8 +39,8 @@ function ExampleRow({
   post,
   onOpen,
 }: {
-  post: WordPost;
-  onOpen: (post: WordPost) => void;
+  post: WordPostSummary;
+  onOpen: (post: WordPostSummary) => void;
 }) {
   const parts = highlightWord(clipExample(post.sentence, post.word), post.word);
   return (

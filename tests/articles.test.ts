@@ -41,7 +41,7 @@ const posts: WordPost[] = [
     date: '2025-12-31',
     source: '经济学人',
     tags: ['GRE'],
-    synonyms: [{ word: 'tether', nuance: '', example: '' }],
+    synonymWords: ['tether'],
   }),
 ];
 

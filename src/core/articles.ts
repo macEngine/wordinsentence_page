@@ -2,7 +2,7 @@
  * Pure logic behind the Articles page (one card per blog post).
  * Framework-free; tested by tests/articles.test.ts.
  */
-import type { WordPost } from './wordPost.ts';
+import type { WordPostSummary } from './articleIndex.ts';
 import { collectSources, collectTags } from './words.ts';
 
 export interface ArticleFilter {
@@ -23,12 +23,12 @@ export const ALL_ARTICLES_FILTER: ArticleFilter = {
   query: '',
 };
 
-export function articleYear(post: WordPost): number {
+export function articleYear(post: WordPostSummary): number {
   return Number(post.date.slice(0, 4));
 }
 
 /** Distinct years, newest first. */
-export function collectYears(posts: WordPost[]): number[] {
+export function collectYears(posts: WordPostSummary[]): number[] {
   return [...new Set(posts.map(articleYear))].sort((a, b) => b - a);
 }
 
@@ -43,7 +43,7 @@ export function queryTerms(query: string): string[] {
 }
 
 /** Text a search term is matched against. Not the full markdown on purpose: searching the 解析 prose makes every word match everything. */
-function haystack(post: WordPost): string {
+function haystack(post: WordPostSummary): string {
   return [
     post.word,
     post.source ?? '',
@@ -51,16 +51,16 @@ function haystack(post: WordPost): string {
     post.sentence,
     post.translation ?? '',
     post.meaning ?? '',
-    ...(post.synonyms ?? []).map((s) => s.word),
+    ...(post.synonymWords ?? []),
   ]
     .join('\n')
     .toLowerCase();
 }
 
 export function filterArticles(
-  posts: WordPost[],
+  posts: WordPostSummary[],
   filter: ArticleFilter
-): WordPost[] {
+): WordPostSummary[] {
   const terms = queryTerms(filter.query);
   return posts.filter((p) => {
     if (filter.year !== null && articleYear(p) !== filter.year) return false;
@@ -78,7 +78,7 @@ export function filterArticles(
 }
 
 /** URL slug for a post: `2026-07-07-wrangling`. */
-export function postSlug(post: WordPost): string {
+export function postSlug(post: WordPostSummary): string {
   const word = post.word
     .toLowerCase()
     .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-')
@@ -87,9 +87,9 @@ export function postSlug(post: WordPost): string {
 }
 
 export function findBySlug(
-  posts: WordPost[],
+  posts: WordPostSummary[],
   slug: string
-): WordPost | undefined {
+): WordPostSummary | undefined {
   return posts.find((p) => postSlug(p) === slug);
 }
 

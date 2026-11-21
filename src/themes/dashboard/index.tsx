@@ -5,14 +5,14 @@ import { getActivityData } from '@/hooks/useActivities';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocale } from '@/hooks/useLocale';
 import { Header } from '@/components/Header';
-import type { WordPost } from '@/core/wordPost';
+import type { WordPostSummary } from '@/core/articleIndex';
 import { findBySlug, postSlug } from '@/core/articles';
 import { sortWordsByDate } from '@/core/words';
-import wordsData from '@/static/words.json';
+import wordsData from '@/static/words-index.json';
 import lexiconData from '@/static/lexicon.json';
 import { isWordTag, type LexiconEntry } from '@/core/lexicon';
 
-const words = wordsData as WordPost[];
+const words = wordsData as WordPostSummary[];
 const sortedWords = sortWordsByDate(words);
 const lexicon = lexiconData as LexiconEntry[];
 
@@ -105,7 +105,8 @@ function Dashboard() {
     setRoute(target);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
-  const openPost = (post: WordPost) => navigate('articles', postSlug(post));
+  const openPost = (post: WordPostSummary) =>
+    navigate('articles', postSlug(post));
   const openWord = (word: string) => navigate('word', word.toLowerCase());
   // A Latin-letter tag is a word: it opens the word page, not the tag list.
   const openTag = (tag: string) =>

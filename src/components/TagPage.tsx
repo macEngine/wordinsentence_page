@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import { paginate, sortWordsByDate } from '../core/words';
 import { LIST_PAGE_SIZE } from '../core/pager';
 import { Pager } from './Pager';
@@ -8,9 +8,9 @@ import { PostList } from './PostList';
 
 interface TagPageProps {
   tag: string;
-  posts: WordPost[];
+  posts: WordPostSummary[];
   onBack: () => void;
-  onOpen: (post: WordPost) => void;
+  onOpen: (post: WordPostSummary) => void;
 }
 
 /** V2EX-style /tag/<tag> page: breadcrumb header, then every post with that tag. */

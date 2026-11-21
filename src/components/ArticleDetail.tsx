@@ -1,14 +1,17 @@
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
+import { postSlug } from '../core/articles';
+import { useArticle } from '../hooks/useArticle';
 import { PostMarkdown } from './PostMarkdown';
 import { BOX, SideCard } from './SideCard';
 
 interface ArticleDetailProps {
-  post: WordPost;
+  /** The index entry; the body is fetched by slug when the page opens. */
+  post: WordPostSummary;
   /** Posts in display order, for prev / next. */
-  posts: WordPost[];
+  posts: WordPostSummary[];
   onBack: () => void;
-  onOpen: (post: WordPost) => void;
+  onOpen: (post: WordPostSummary) => void;
   onOpenTag: (tag: string) => void;
 }
 
@@ -24,6 +27,7 @@ export function ArticleDetail({
   onOpenTag,
 }: ArticleDetailProps) {
   const { t, locale } = useLocale();
+  const { post: full, loading, error } = useArticle(postSlug(post));
   const idx = posts.indexOf(post);
   const newer = idx > 0 ? posts[idx - 1] : null;
   const older = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null;
@@ -84,7 +88,20 @@ export function ArticleDetail({
 
             {/* The whole post; the divider runs edge to edge */}
             <article className="border-t border-[var(--color-border)] px-4 py-5 sm:px-8 sm:py-7">
-              <PostMarkdown>{post.markdown}</PostMarkdown>
+              {full ? (
+                <PostMarkdown>{full.markdown}</PostMarkdown>
+              ) : error ? (
+                <p className="py-10 text-center text-sm text-[var(--color-muted)]">
+                  {t('articleLoadFailed')} ({error})
+                </p>
+              ) : (
+                <p
+                  role="status"
+                  className="py-10 text-center text-sm text-[var(--color-muted)]"
+                >
+                  {loading ? t('loading') : ''}
+                </p>
+              )}
             </article>
           </div>
 
@@ -120,13 +137,13 @@ export function ArticleDetail({
           </SideCard>
           <SideCard title={t('source')}>
             <p className="text-sm leading-relaxed">
-              {post.sourceDetail ?? post.source ?? '\u00a0'}
+              {full?.sourceDetail ?? post.source ?? '\u00a0'}
             </p>
           </SideCard>
-          {post.synonyms && post.synonyms.length > 0 && (
+          {full?.synonyms && full.synonyms.length > 0 && (
             <SideCard title={locale === 'zh' ? '近义词' : 'Synonyms'}>
               <ul className="space-y-1 text-xs">
-                {post.synonyms
+                {full.synonyms
                   .filter((s) => s.word !== post.word)
                   .map((s) => (
                     <li key={s.word} className="flex gap-2">

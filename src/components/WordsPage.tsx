@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import {
   collectWordIndex,
   searchWordIndex,
@@ -15,7 +15,7 @@ import { LIST_PAGE_SIZE } from '../core/pager';
 import { paginate } from '../core/words';
 
 interface WordsPageProps {
-  posts: WordPost[];
+  posts: WordPostSummary[];
   lexicon: LexiconEntry[];
   onOpenWord: (word: string) => void;
   onOpenTag: (tag: string) => void;

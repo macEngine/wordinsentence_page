@@ -4,12 +4,20 @@
 
 ## 1. 两类内容
 
-| 内容 | 是什么 | 文件 | 页面 |
-|---|---|---|---|
+| 内容     | 是什么                                             | 文件                         | 页面                          |
+| -------- | -------------------------------------------------- | ---------------------------- | ----------------------------- |
 | **文章** | 一个单词在真实外刊里的**一次出现**（每日一词系列） | `words/YYYY-MM-DD-<word>.md` | 首页列表 → `/articles/<slug>` |
-| **词条** | 单词本身：常用义、一眼记住、短语、词形 | `lexicon/<word>.md` | `/word` 表格 → `/word/<word>` |
+| **词条** | 单词本身：常用义、一眼记住、短语、词形             | `lexicon/<word>.md`          | `/word` 表格 → `/word/<word>` |
 
-构建时 `pnpm words:build` / `pnpm lexicon:build` 把 markdown 转成 `src/static/words.json` / `lexicon.json`（两者都挂在 `prebuild`，CI 自动跑，**不要手改 JSON**）。
+构建时 `pnpm words:build` / `pnpm lexicon:build` 把 markdown 转成 JSON（两者都挂在 `prebuild`，CI 自动跑，**不要手改 JSON**）：
+
+| 产物                                                      | 内容                                                                                          | 谁用                                                |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `src/static/words-index.json`（提交到仓库）               | 每篇文章的**列表字段**：单词、日期、标签、来源、含词的那一句、释义短句（`gloss`）、近义词词表 | 首页列表 / 标签页 / 单词表 / 单词页，随 JS 一起打包 |
+| `public/data/articles/<slug>.json`（gitignore，构建生成） | 文章**全文**：markdown、解析、翻译、近义词表、每日一句                                        | 只在打开那篇文章时 `fetch`                          |
+| `src/static/lexicon.json`                                 | 词条                                                                                          | 单词页                                              |
+
+这样文章再多，首页包也不会跟着变大。本地跑 `pnpm dev` 前先跑一次 `pnpm words:build`，否则文章页会 404。
 
 ## 2. 文章 `words/*.md`
 
@@ -46,21 +54,24 @@
 ```markdown
 ---
 word: stark
-forms: [stark, starkly, starkness]     # 所有算作这个词的拼写，小写
+forms: [stark, starkly, starkness] # 所有算作这个词的拼写，小写
 phonetic_uk: /stɑːk/
 phonetic_us: /stɑːrk/
 tags: [六级, 考研, 托福]
 ---
 
 ## 常用义
+
 1. **adj. 鲜明的、赤裸裸的**（对比、现实）— a stark contrast / the stark reality
 2. **adj. 荒凉的、光秃秃的**（景色、房间）— a stark landscape
 
 ## 一眼记住
+
 - 🏰 **史塔克家族 = House Stark** 《权力的游戏》北境之主：寒冬、直来直去——就是 stark。
 - 🧊 **古英语 stearc = 硬、僵** 硬到没有一点柔软和装饰。
 
 ## 短语
+
 - **in stark contrast to** … 与……形成鲜明对比
 - **stark naked** 一丝不挂
 ```
@@ -84,7 +95,7 @@ tags: [六级, 考研, 托福]
 ### 短语
 
 - 每条 `- **短语** 中文意思`。
-- 哪篇文章的引文用到了这个短语，短语自动变成链接跳到那篇文章（匹配规则：4 字母以上的词按词干匹配 deluge→deluged，短词 a/of/to 精确匹配，`be` 匹配 is/was/were…，`…`/sth/sb 跳过，` / ` 表示可替换的尾词）。
+- 哪篇文章的引文用到了这个短语，短语自动变成链接跳到那篇文章（匹配规则：4 字母以上的词按词干匹配 deluge→deluged，短词 a/of/to 精确匹配，`be` 匹配 is/was/were…，`…`/sth/sb 跳过，`/` 表示可替换的尾词）。
 
 ### 词形
 

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { isWordTag } from '../core/lexicon';
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import {
   ALL_ARTICLES_FILTER,
   collectSources,
@@ -20,9 +20,9 @@ import { BOX } from './SideCard';
 import { SiteSidebar } from './SiteSidebar';
 
 interface ArticlesPageProps {
-  posts: WordPost[];
+  posts: WordPostSummary[];
   lexicon: LexiconEntry[];
-  onOpen: (post: WordPost) => void;
+  onOpen: (post: WordPostSummary) => void;
   onOpenWords: () => void;
 }
 

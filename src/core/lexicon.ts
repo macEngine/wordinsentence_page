@@ -24,6 +24,7 @@
  */
 import { parseFrontmatter, splitSections } from './wordPost.ts';
 import type { WordPost } from './wordPost.ts';
+import type { WordPostSummary } from './articleIndex.ts';
 
 export interface LexiconEntry {
   /** Canonical spelling, lower-case. */
@@ -118,10 +119,10 @@ export function wordForms(entries: LexiconEntry[], word: string): string[] {
  * tags matches one of the word's forms.
  */
 export function examplesForWord(
-  posts: WordPost[],
+  posts: WordPostSummary[],
   entries: LexiconEntry[],
   word: string
-): WordPost[] {
+): WordPostSummary[] {
   const forms = new Set(wordForms(entries, word));
   return posts.filter(
     (p) =>
@@ -220,7 +221,11 @@ export function firstSense(entry: LexiconEntry): string | undefined {
  * post: the headword's row in 近义词辨析, else the “…” after 意思是 in the
  * 解析, else nothing (the table shows a dash rather than a paragraph).
  */
-export function shortMeaning(post: WordPost): string | undefined {
+export function shortMeaning(
+  post: Pick<WordPost, 'word' | 'synonyms' | 'analysis'> & { gloss?: string }
+): string | undefined {
+  // Index entries carry the answer precomputed at build time.
+  if (post.gloss !== undefined) return post.gloss || undefined;
   const w = normalizeWord(post.word);
   // Exact match first ("buck up" row for headword "buck up"); then a row
   // whose words contain the headword ("lash out" row for headword "lash").
@@ -311,7 +316,7 @@ export function clipExample(sentence: string, word: string, max = 140): string {
 
 /** Every word the site knows about: lexicon entries plus post headwords. */
 export function collectWordIndex(
-  posts: WordPost[],
+  posts: WordPostSummary[],
   entries: LexiconEntry[]
 ): WordIndexItem[] {
   const items = new Map<string, WordIndexItem>();
@@ -440,7 +445,7 @@ export function hookItems(entry: LexiconEntry): HookItem[] {
  * excluded; an empty result means "nothing to show".
  */
 export function formsWithExamples(
-  posts: WordPost[],
+  posts: WordPostSummary[],
   entries: LexiconEntry[],
   word: string
 ): { form: string; count: number }[] {
@@ -530,7 +535,10 @@ export function phraseRegex(phrase: string): RegExp | null {
 }
 
 /** Posts whose quoted sentence uses the phrase. */
-export function phraseExamples(posts: WordPost[], phrase: string): WordPost[] {
+export function phraseExamples(
+  posts: WordPostSummary[],
+  phrase: string
+): WordPostSummary[] {
   const re = phraseRegex(phrase);
   if (!re) return [];
   return posts.filter((p) => re.test(p.sentence.replace(/\*\*/g, '')));

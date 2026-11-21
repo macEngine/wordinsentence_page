@@ -1,17 +1,17 @@
 import { useLocale } from '../hooks/useLocale';
-import type { WordPost } from '../core/wordPost';
+import type { WordPostSummary } from '../core/articleIndex';
 import { postSlug } from '../core/articles';
 import { stripBold, truncateSentence } from '../core/words';
 
 interface PostListProps {
-  posts: WordPost[];
-  onOpen: (post: WordPost) => void;
+  posts: WordPostSummary[];
+  onOpen: (post: WordPostSummary) => void;
   /** Shown when `posts` is empty. */
   emptyText: string;
 }
 
 /** 48px thumbnail: the 词汇卡片 image, or the word's first letter. */
-function Thumb({ post }: { post: WordPost }) {
+function Thumb({ post }: { post: WordPostSummary }) {
   if (post.image) {
     return (
       <img
